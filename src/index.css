@@ -1,0 +1,224 @@
+@import "tailwindcss";
+
+@theme {
+  /* Brand */
+  --color-forest: #174b3b;
+  --color-forest-deep: #103a2f;
+  --color-forest-soft: #2c634f;
+  --color-ember: #e58a35;
+  --color-ember-hover: #d67a25;
+  --color-ember-ink: #a2540f; /* orange that passes AA on light backgrounds */
+  --color-ember-light: #f2b67c; /* orange for text on dark green */
+
+  /* Neutrals */
+  --color-ivory: #f8f6f2;
+  --color-sage: #edf2ee;
+  --color-charcoal: #252925;
+  --color-muted: #5e645f; /* body-secondary, AA on white/ivory */
+  --color-grey: #777d78; /* meta text only (≥14px semibold) */
+  --color-line: #e3e3dd;
+  --color-line-strong: #cfd2cc;
+
+  --font-heading: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --shadow-soft: 0 1px 2px rgb(16 58 47 / 0.05), 0 12px 32px -18px rgb(16 58 47 / 0.28);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background: var(--color-ivory);
+    color: var(--color-charcoal);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-heading);
+    color: var(--color-forest-deep);
+    text-wrap: balance;
+    letter-spacing: -0.015em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  section[id] {
+    scroll-margin-top: 76px;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-ember);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: 76rem;
+    margin-inline: auto;
+    padding-inline: 1.125rem;
+  }
+  @media (min-width: 640px) {
+    .container-page {
+      padding-inline: 1.75rem;
+    }
+  }
+  @media (min-width: 1024px) {
+    .container-page {
+      padding-inline: 2.5rem;
+    }
+  }
+
+  /* Section label: "01 · Knee Replacement" */
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-forest);
+  }
+  .kicker::before {
+    content: "";
+    width: 1.75rem;
+    height: 1px;
+    background: var(--color-ember);
+  }
+  .kicker-light {
+    color: var(--color-ember-light);
+  }
+  .kicker-light::before {
+    background: var(--color-ember-light);
+  }
+
+  .h-section {
+    font-size: clamp(1.7rem, 1.25rem + 1.9vw, 2.6rem);
+    line-height: 1.15;
+    font-weight: 700;
+  }
+  .h-sub {
+    font-size: clamp(1.15rem, 1.05rem + 0.4vw, 1.35rem);
+    line-height: 1.3;
+    font-weight: 700;
+  }
+  .lede {
+    font-size: clamp(1.02rem, 0.98rem + 0.25vw, 1.15rem);
+    line-height: 1.7;
+    color: var(--color-muted);
+  }
+  .prose-body p + p {
+    margin-top: 1rem;
+  }
+
+  .field-input {
+    width: 100%;
+    min-height: 3rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-line-strong);
+    background: #fff;
+    padding: 0.625rem 0.875rem;
+    font-size: 1rem; /* ≥16px prevents iOS zoom */
+    color: var(--color-charcoal);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  .field-input::placeholder {
+    color: #8b918c;
+  }
+  .field-input:hover {
+    border-color: #b3b8b2;
+  }
+  .field-input:focus {
+    outline: none;
+    border-color: var(--color-forest);
+    box-shadow: 0 0 0 3px rgb(23 75 59 / 0.14);
+  }
+  .field-input[aria-invalid="true"] {
+    border-color: #b42318;
+  }
+
+  /* Bullet list with small square markers */
+  .list-square > li {
+    position: relative;
+    padding-left: 1.25rem;
+  }
+  .list-square > li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.68em;
+    width: 6px;
+    height: 6px;
+    background: var(--color-ember);
+  }
+}
+
+/* Restrained reveal on scroll */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-modal-in {
+  animation: modal-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.animate-fade-in {
+  animation: fade-in 0.22s ease both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .animate-modal-in,
+  .animate-fade-in {
+    animation: none;
+  }
+}
+
+/* Fine diagram labels are unreadable on phones: hide them there; an HTML key is shown instead */
+@media (max-width: 639px) {
+  .diagram-label-sm {
+    display: none;
+  }
+}
