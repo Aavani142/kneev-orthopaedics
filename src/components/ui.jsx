@@ -1,57 +1,67 @@
+import { ArrowUpRight } from 'lucide-react';
+import { Reveal, SplitHeading } from './motion.jsx';
+
 const VARIANTS = {
   primary: 'bg-forest text-white hover:bg-forest-deep',
-  accent: 'bg-ember text-forest-deep hover:bg-ember-hover',
-  outline: 'border border-forest/30 bg-transparent text-forest hover:border-forest hover:bg-forest/5',
+  accent: 'bg-ember text-forest-night hover:bg-ember-hover',
+  outline: 'border border-forest/30 bg-transparent text-forest-deep hover:border-forest hover:bg-forest hover:text-white',
   light: 'bg-white text-forest-deep hover:bg-ivory',
-  outlineLight: 'border border-white/35 text-white hover:border-white/70 hover:bg-white/5',
+  outlineLight: 'border border-white/30 text-white hover:border-white hover:bg-white hover:text-forest-deep',
+  whatsapp: 'bg-[#25D366] text-white hover:bg-[#1ebe5b]',
 };
 
 const SIZES = {
   sm: 'min-h-10 px-4 text-sm',
-  md: 'min-h-12 px-5 text-[0.95rem]',
-  lg: 'min-h-[3.25rem] px-6 text-[0.98rem]',
+  md: 'min-h-12 px-6 text-[0.93rem]',
+  lg: 'min-h-14 px-7 text-[0.97rem]',
 };
 
-export function Button({ as = 'button', variant = 'primary', size = 'md', className = '', children, ...props }) {
+/**
+ * Pill button. With `arrow`, an arrow disc slides on hover.
+ */
+export function Button({ as = 'button', variant = 'primary', size = 'md', arrow = false, className = '', children, ...props }) {
   const Tag = as;
   const extra = Tag === 'button' && !props.type ? { type: 'button' } : {};
   return (
     <Tag
-      className={`inline-flex items-center justify-center gap-2 rounded-md font-heading font-semibold tracking-[0.005em] transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-70 ${VARIANTS[variant]} ${SIZES[size]} ${className}`}
+      className={`group/btn inline-flex items-center justify-center gap-2.5 whitespace-nowrap rounded-full font-heading font-semibold tracking-[0.01em] transition-[background-color,color,border-color,transform] duration-300 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-70 ${VARIANTS[variant]} ${SIZES[size]} ${arrow ? 'pr-2' : ''} ${className}`}
       {...extra}
       {...props}
     >
       {children}
+      {arrow && (
+        <span className="ml-1 flex h-9 w-9 items-center justify-center overflow-hidden rounded-full bg-black/10" aria-hidden="true">
+          <ArrowUpRight size={17} className="transition-transform duration-300 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 group-hover/btn:rotate-45" />
+        </span>
+      )}
     </Tag>
   );
 }
 
-export function SectionIntro({ kicker, title, lede, light = false, className = '', id }) {
+/** Section opener: kicker + animated serif heading + lede. */
+export function SectionIntro({ kicker, title, lede, light = false, className = '', id, as = 'h2' }) {
   return (
-    <div className={`max-w-2xl ${className}`}>
-      {kicker && <p className={`kicker ${light ? 'kicker-light' : ''}`}>{kicker}</p>}
-      <h2 id={id} className={`h-section mt-4 ${light ? '!text-white' : ''}`}>
-        {title}
-      </h2>
-      {lede && <p className={`lede mt-4 ${light ? '!text-white/75' : ''}`}>{lede}</p>}
+    <div className={`max-w-3xl ${light ? 'on-dark' : ''} ${className}`}>
+      {kicker && (
+        <Reveal as="p" className={`kicker ${light ? 'kicker-light' : ''}`}>
+          {kicker}
+        </Reveal>
+      )}
+      <SplitHeading as={as} id={id} text={title} className={`h-section mt-5 ${light ? '!text-white' : ''}`} />
+      {lede && (
+        <Reveal as="p" delay={0.15} className={`lede mt-6 max-w-2xl ${light ? '!text-white/70' : ''}`}>
+          {lede}
+        </Reveal>
+      )}
     </div>
   );
 }
 
+/** Official WhatsApp glyph (uses currentColor). */
 export function WhatsAppIcon({ size = 20, className = '' }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true" className={className}>
-      <path d="M3.6 20.4l1.25-4.15A8.4 8.4 0 1 1 7.9 19.3L3.6 20.4z" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
-      <path
-        d="M9.1 8.2c.2-.45.45-.5.75-.5h.5c.2 0 .4.08.5.38l.62 1.5c.08.22.03.45-.1.6l-.5.6c-.1.13-.12.3-.02.47.6 1 1.42 1.8 2.42 2.4.17.1.34.08.47-.02l.6-.5c.15-.13.38-.18.6-.1l1.5.62c.3.1.38.3.38.5v.5c0 .3-.05.55-.5.75-.6.3-1.6.45-2.9-.1-1.6-.75-3-2.1-3.85-3.7-.6-1.2-.45-2.2-.12-2.9z"
-        fill="currentColor"
-      />
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" className={className}>
+      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z" />
     </svg>
   );
-}
-
-/** Small "needs clinic review" note, visible only in development builds. */
-export function DevNote({ children }) {
-  if (!import.meta.env.DEV) return null;
-  return <p className="mt-3 rounded border border-dashed border-ember-ink/50 bg-ember/10 px-3 py-2 text-xs text-ember-ink">Dev note: {children}</p>;
 }

@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
 import Header from '../components/Header.jsx';
 import Hero from '../components/Hero.jsx';
+import Services from '../components/Services.jsx';
+import Interlude from '../components/Interlude.jsx';
 import KneeReplacement from '../components/KneeReplacement.jsx';
 import ACLReconstruction from '../components/ACLReconstruction.jsx';
 import WhyKneev from '../components/WhyKneev.jsx';
@@ -10,40 +11,12 @@ import Testimonials from '../components/Testimonials.jsx';
 import ClinicGallery from '../components/ClinicGallery.jsx';
 import FAQ from '../components/FAQ.jsx';
 import ContactSection from '../components/ContactSection.jsx';
-import FinalCTA from '../components/FinalCTA.jsx';
+import AppointmentSection from '../components/AppointmentSection.jsx';
 import Footer from '../components/Footer.jsx';
 import MobileActionBar from '../components/MobileActionBar.jsx';
-
-/** Restrained fade-in as sections enter the viewport. */
-function useReveal() {
-  useEffect(() => {
-    const els = document.querySelectorAll('.reveal');
-    if (!('IntersectionObserver' in window)) {
-      els.forEach((el) => el.classList.add('is-visible'));
-      return undefined;
-    }
-    const io = new IntersectionObserver(
-      (entries) =>
-        entries.forEach((e) => {
-          if (e.isIntersecting) {
-            e.target.classList.add('is-visible');
-            io.unobserve(e.target);
-          }
-        }),
-      { rootMargin: '0px 0px -40px 0px', threshold: 0 },
-    );
-    els.forEach((el) => io.observe(el));
-    // Safety net: never leave content hidden (jump links, print, unusual browsers).
-    const fallback = setTimeout(() => els.forEach((el) => el.classList.add('is-visible')), 2500);
-    return () => {
-      io.disconnect();
-      clearTimeout(fallback);
-    };
-  }, []);
-}
+import FloatingContact from '../components/FloatingContact.jsx';
 
 export default function Home() {
-  useReveal();
   return (
     <>
       <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-white focus:px-4 focus:py-2">
@@ -52,19 +25,33 @@ export default function Home() {
       <Header />
       <main id="main">
         <Hero />
+        <Services />
+        <Interlude
+          source="band-services"
+          title="Not sure which treatment *you need?*"
+          text="That is what a consultation is for. Speak with our team and we will guide you to the right assessment."
+        />
         <KneeReplacement />
         <ACLReconstruction />
         <WhyKneev />
+        <Interlude
+          tone="dark"
+          source="band-second-opinion"
+          title="Already been *advised surgery?*"
+          text="Bring your reports for a second opinion. Non-surgical options are always discussed first."
+        />
         <DoctorProfile />
         <PatientJourney />
         <Testimonials />
         <ClinicGallery />
         <FAQ />
         <ContactSection />
-        <FinalCTA />
+        {/* Same enquiry form as the popup, directly above the footer */}
+        <AppointmentSection />
       </main>
       <Footer />
       <MobileActionBar />
+      <FloatingContact />
     </>
   );
 }

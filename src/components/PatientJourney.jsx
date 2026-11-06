@@ -1,4 +1,5 @@
 import { useLeadModal } from './LeadModalContext.jsx';
+import { DrawLine, Reveal, Stagger, StaggerItem } from './motion.jsx';
 import { Button, SectionIntro } from './ui.jsx';
 
 const STEPS = [
@@ -12,32 +13,33 @@ const STEPS = [
 export default function PatientJourney() {
   const { openLeadModal } = useLeadModal();
   return (
-    <section id="journey" aria-labelledby="journey-title" data-track-section="journey" className="bg-sage py-16 sm:py-20 lg:py-24">
+    <section id="journey" aria-labelledby="journey-title" data-track-section="journey" className="on-dark bg-forest-deep py-20 text-white sm:py-24 lg:py-32">
       <div className="container-page">
-        <div className="reveal flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-          <SectionIntro id="journey-title" kicker="Your Journey" title="What Happens After You Contact KNEEV" />
-          <Button data-cta="consultation" variant="outline" className="self-start lg:self-auto" onClick={() => openLeadModal({ source: 'journey' })}>
-            Start with an enquiry
-          </Button>
+        <div className="grid items-end gap-8 lg:grid-cols-12">
+          <SectionIntro id="journey-title" light className="lg:col-span-8" kicker="Your journey" title="What happens after *you contact KNEEV*" />
+          <Reveal delay={0.2} className="lg:col-span-4 lg:text-right">
+            <Button data-cta="consultation" variant="accent" arrow onClick={() => openLeadModal({ source: 'journey' })}>
+              Start with an enquiry
+            </Button>
+          </Reveal>
         </div>
 
-        <ol className="reveal relative mt-12 grid gap-0 lg:mt-16 lg:grid-cols-5 lg:gap-6">
-          {/* connecting line (desktop) */}
-          <span className="absolute top-5 right-[10%] left-[10%] hidden h-px bg-forest/25 lg:block" aria-hidden="true" />
-          {STEPS.map(([t, d], i) => (
-            <li key={t} className="relative flex gap-5 pb-8 last:pb-0 lg:flex-col lg:items-center lg:gap-0 lg:pb-0 lg:text-center">
-              {/* vertical line (mobile) */}
-              {i < STEPS.length - 1 && <span className="absolute top-10 bottom-0 left-5 w-px bg-forest/25 lg:hidden" aria-hidden="true" />}
-              <span className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-forest bg-sage font-heading text-sm font-bold text-forest">
-                {String(i + 1).padStart(2, '0')}
-              </span>
-              <div className="lg:mt-5">
-                <h3 className="font-heading text-[1.05rem] font-bold">{t}</h3>
-                <p className="mt-1.5 text-[0.95rem] leading-relaxed text-muted">{d}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
+        <div className="relative mt-16 lg:mt-24">
+          <DrawLine className="absolute top-6 right-0 left-0 hidden h-px text-white/25 lg:block" />
+          <Stagger as="ol" gap={0.12} className="grid lg:grid-cols-5 lg:gap-8">
+            {STEPS.map(([t, d], i) => (
+              <StaggerItem as="li" key={t} className="relative flex gap-6 border-l border-white/15 pb-10 pl-6 last:pb-0 lg:block lg:border-l-0 lg:pb-0 lg:pl-0">
+                <span className="relative z-10 -ml-[2.05rem] flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/25 bg-forest-deep font-serif text-xl text-ember-light lg:ml-0">
+                  {i + 1}
+                </span>
+                <div className="lg:mt-8">
+                  <h3 className="font-serif text-[1.2rem] leading-tight font-bold !text-white">{t}</h3>
+                  <p className="mt-3 text-[0.95rem] leading-relaxed text-white/65">{d}</p>
+                </div>
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </div>
       </div>
     </section>
   );

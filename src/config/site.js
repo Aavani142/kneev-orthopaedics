@@ -38,8 +38,7 @@ export const SITE = {
 };
 
 export const LEAD_ENDPOINT = env.VITE_LEAD_ENDPOINT || '/api/lead';
-export const POPUP_DELAY_MS = Number(env.VITE_POPUP_DELAY_MS || 6000);
-export const POPUP_SNOOZE_DAYS = Number(env.VITE_POPUP_SNOOZE_DAYS || 30);
+export const POPUP_DELAY_MS = Number(env.VITE_POPUP_DELAY_MS || 3000);
 
 export const DISCLAIMER =
   'Information on this website is for general educational purposes and does not replace a medical consultation or individual clinical assessment.';

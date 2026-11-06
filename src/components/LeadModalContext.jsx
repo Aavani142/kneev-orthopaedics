@@ -1,9 +1,20 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { POPUP_DELAY_MS, POPUP_SNOOZE_DAYS } from '../config/site.js';
-import { getLeadStatus, setLeadStatus } from '../services/leadService.js';
+import { POPUP_DELAY_MS } from '../config/site.js';
+import { getLeadStatus } from '../services/leadService.js';
 import { trackPopupOpen } from '../services/trackingService.js';
 
 const LeadModalContext = createContext(null);
+const SESSION_KEY = 'kneev_popup_closed';
+
+function popupSuppressed() {
+  if (new URLSearchParams(window.location.search).has('popup')) return false; // ?popup=1 forces it (testing)
+  if (getLeadStatus()?.state === 'submitted') return true; // never re-ask someone who has enquired
+  try {
+    return sessionStorage.getItem(SESSION_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
 
 export function LeadModalProvider({ children }) {
   const [modal, setModal] = useState({ open: false, source: 'popup', treatment: '', auto: false, key: 0 });
@@ -18,7 +29,12 @@ export function LeadModalProvider({ children }) {
 
   const closeLeadModal = useCallback(() => {
     setModal((m) => ({ ...m, open: false }));
-    if (getLeadStatus()?.state !== 'submitted') setLeadStatus({ state: 'dismissed', at: Date.now() });
+    // Closing only snoozes the popup for this browser session; it returns on the next visit.
+    try {
+      sessionStorage.setItem(SESSION_KEY, '1');
+    } catch {
+      /* storage unavailable */
+    }
   }, []);
 
   // Visitor is filling in an inline form: never interrupt with the popup.
@@ -26,15 +42,13 @@ export function LeadModalProvider({ children }) {
     engaged.current = true;
   }, []);
 
-  // First-visit popup, after a short delay. Suppressed after submission, and
-  // for POPUP_SNOOZE_DAYS after the visitor closes it.
+  // Popup on opening the site, after a short delay. Shown once per browser session;
+  // never shown again after a successful enquiry.
   useEffect(() => {
-    const status = getLeadStatus();
-    if (status?.state === 'submitted') return undefined;
-    if (status?.state === 'dismissed' && Date.now() - status.at < POPUP_SNOOZE_DAYS * 864e5) return undefined;
+    if (popupSuppressed()) return undefined;
 
     const timer = setTimeout(() => {
-      if (engaged.current || openRef.current || getLeadStatus()?.state === 'submitted') return;
+      if (engaged.current || openRef.current || popupSuppressed()) return;
       trackPopupOpen('auto');
       setModal((m) => (m.open ? m : { open: true, source: 'popup', treatment: '', auto: true, key: m.key + 1 }));
     }, POPUP_DELAY_MS);

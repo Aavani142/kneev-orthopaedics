@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { Menu, Phone, X } from 'lucide-react';
+import { AnimatePresence, m, useMotionValueEvent, useScroll } from 'framer-motion';
+import { Phone } from 'lucide-react';
 import logo from '../assets/img/logo.png';
-import { SITE, telHref } from '../config/site.js';
+import { SITE, telHref, whatsappHref } from '../config/site.js';
 import { useLeadModal } from './LeadModalContext.jsx';
-import { Button } from './ui.jsx';
+import { EASE } from './motion.jsx';
+import { Button, WhatsAppIcon } from './ui.jsx';
 
 const LINKS = [
   { href: '#knee-replacement', label: 'Knee Replacement' },
@@ -14,19 +16,23 @@ const LINKS = [
 
 export default function Header() {
   const { openLeadModal } = useLeadModal();
-  const [scrolled, setScrolled] = useState(false);
+  const { scrollY } = useScroll();
+  const [solid, setSolid] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuBtn = useRef(null);
 
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  // Transparent over the dark hero; solid paper once scrolled. Hides on scroll down, returns on scroll up.
+  useMotionValueEvent(scrollY, 'change', (y) => {
+    const prev = scrollY.getPrevious() ?? 0;
+    setSolid(y > 40);
+    setHidden(y > prev && y > 320);
+  });
 
   useEffect(() => {
     if (!menuOpen) return undefined;
+    const { overflow } = document.body.style;
+    document.body.style.overflow = 'hidden';
     const onKey = (e) => {
       if (e.key === 'Escape') {
         setMenuOpen(false);
@@ -34,75 +40,116 @@ export default function Header() {
       }
     };
     document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = overflow;
+      document.removeEventListener('keydown', onKey);
+    };
   }, [menuOpen]);
 
+  const light = !solid && !menuOpen; // transparent over the light hero
+
   return (
-    <header
-      data-track-section="header"
-      className={`sticky top-0 z-40 border-b bg-ivory/95 backdrop-blur-sm transition-[border-color,box-shadow] ${
-        scrolled || menuOpen ? 'border-line shadow-[0_6px_24px_-18px_rgb(16_58_47/0.45)]' : 'border-transparent'
-      }`}
-    >
-      <div className="container-page flex h-16 items-center justify-between gap-6 lg:h-[4.5rem]">
-        <a href="#top" className="shrink-0" aria-label="KNEEV Orthopaedic Center, back to top">
-          <img src={logo} alt="KNEEV Orthopaedic Center" width="400" height="178" className="h-10 w-auto lg:h-11" />
-        </a>
-
-        <nav aria-label="Main" className="hidden lg:block">
-          <ul className="flex items-center gap-8 font-heading text-[0.9rem] font-semibold text-charcoal/80">
-            {LINKS.map((l) => (
-              <li key={l.href}>
-                <a href={l.href} className="py-2 transition-colors hover:text-forest">{l.label}</a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className="flex items-center gap-2 sm:gap-5">
-          <a href={telHref} className="hidden items-center gap-2 font-heading text-[0.9rem] font-semibold text-forest-deep xl:flex">
-            <Phone size={16} aria-hidden="true" className="text-forest" />
-            {SITE.phoneDisplay}
+    <>
+      <m.header
+        data-track-section="header"
+        initial={{ y: -80, opacity: 0 }}
+        animate={{ y: hidden && !menuOpen ? '-100%' : '0%', opacity: 1 }}
+        transition={{ duration: 0.5, ease: EASE }}
+        className={`fixed inset-x-0 top-0 z-40 transition-[background-color,border-color] duration-500 ${
+          light ? 'border-b border-forest/10 bg-transparent' : menuOpen ? 'border-b border-white/10 bg-forest-night' : 'border-b border-line bg-ivory/90 backdrop-blur-md'
+        }`}
+      >
+        <div className="container-page flex h-[4.25rem] items-center justify-between gap-6 lg:h-20">
+          <a href="#top" className="relative z-10 shrink-0" aria-label="KNEEV Orthopaedic Center, back to top">
+            <img
+              src={logo}
+              alt="KNEEV Orthopaedic Center"
+              width="400"
+              height="178"
+              className={`h-10 w-auto transition-[filter] duration-500 lg:h-11 ${menuOpen ? 'brightness-0 invert' : ''}`}
+            />
           </a>
-          <span className="hidden sm:block">
-            <Button data-cta="consultation" size="sm" className="min-h-11 px-5" onClick={() => openLeadModal({ source: 'header' })}>
-              Book a Consultation
-            </Button>
-          </span>
-          <a
-            href={telHref}
-            className="flex h-11 w-11 items-center justify-center rounded-full text-forest hover:bg-sage sm:hidden"
-            aria-label={`Call the clinic on ${SITE.phoneDisplay}`}
-          >
-            <Phone size={20} aria-hidden="true" />
-          </a>
-          <button
-            ref={menuBtn}
-            type="button"
-            className="flex h-11 w-11 items-center justify-center rounded-full text-forest-deep hover:bg-sage lg:hidden"
-            aria-expanded={menuOpen}
-            aria-controls="mobile-menu"
-            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            onClick={() => setMenuOpen((o) => !o)}
-          >
-            {menuOpen ? <X size={22} aria-hidden="true" /> : <Menu size={22} aria-hidden="true" />}
-          </button>
+
+          <nav aria-label="Main" className="hidden lg:block">
+            <ul className={`flex items-center gap-9 text-[0.88rem] font-medium transition-colors duration-500 text-charcoal/80`}>
+              {LINKS.map((l) => (
+                <li key={l.href}>
+                  <a href={l.href} className="link-line py-1.5 hover:text-current">
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <div className="relative z-10 flex items-center gap-2 sm:gap-5">
+            <a
+              href={telHref}
+              className={`hidden items-center gap-2 text-[0.88rem] font-semibold transition-colors duration-500 xl:flex text-forest-deep`}
+            >
+              <Phone size={15} aria-hidden="true" />
+              {SITE.phoneDisplay}
+            </a>
+            <span className="hidden sm:block">
+              <Button data-cta="consultation" variant="accent" size="sm" className="min-h-11 px-5" onClick={() => openLeadModal({ source: 'header' })}>
+                Book a Consultation
+              </Button>
+            </span>
+            <a
+              href={telHref}
+              aria-label={`Call the clinic on ${SITE.phoneDisplay}`}
+              className={`flex h-11 w-11 items-center justify-center rounded-full sm:hidden ${menuOpen ? 'text-white' : 'text-forest'}`}
+            >
+              <Phone size={20} aria-hidden="true" />
+            </a>
+            <button
+              ref={menuBtn}
+              type="button"
+              aria-expanded={menuOpen}
+              aria-controls="mobile-menu"
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              onClick={() => setMenuOpen((o) => !o)}
+              className={`relative flex h-11 w-11 items-center justify-center lg:hidden ${menuOpen ? 'text-white' : 'text-forest-deep'}`}
+            >
+              <span className={`absolute h-px w-6 bg-current transition-transform duration-300 ${menuOpen ? 'rotate-45' : '-translate-y-1'}`} />
+              <span className={`absolute h-px w-6 bg-current transition-transform duration-300 ${menuOpen ? '-rotate-45' : 'translate-y-1'}`} />
+            </button>
+          </div>
         </div>
-      </div>
+      </m.header>
 
-      {menuOpen && (
-        <nav id="mobile-menu" aria-label="Main" className="animate-fade-in border-t border-line bg-ivory lg:hidden">
-          <ul className="container-page py-2">
-            {LINKS.map((l) => (
-              <li key={l.href} className="border-b border-line last:border-0">
-                <a href={l.href} onClick={() => setMenuOpen(false)} className="flex min-h-12 items-center font-heading font-semibold text-forest-deep">
-                  {l.label}
-                </a>
-              </li>
-            ))}
-            <li className="py-3 sm:hidden">
+      <AnimatePresence>
+        {menuOpen && (
+          <m.nav
+            id="mobile-menu"
+            aria-label="Main"
+            initial={{ clipPath: 'inset(0% 0% 100% 0%)' }}
+            animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
+            exit={{ clipPath: 'inset(0% 0% 100% 0%)' }}
+            transition={{ duration: 0.6, ease: EASE }}
+            className="on-dark fixed inset-0 z-30 flex flex-col bg-forest-night px-5 pt-24 pb-10 text-white sm:px-8 lg:hidden"
+          >
+            <ul className="flex-1">
+              {LINKS.map((l, i) => (
+                <m.li
+                  key={l.href}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, ease: EASE, delay: 0.15 + i * 0.07 }}
+                  className="border-b border-white/10"
+                >
+                  <a href={l.href} onClick={() => setMenuOpen(false)} className="flex items-baseline gap-4 py-4 font-serif text-[1.9rem] leading-none">
+                    <span className="font-sans text-xs text-ember-light">0{i + 1}</span>
+                    {l.label}
+                  </a>
+                </m.li>
+              ))}
+            </ul>
+            <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="space-y-3">
               <Button
                 data-cta="consultation"
+                variant="accent"
+                size="lg"
                 className="w-full"
                 onClick={() => {
                   setMenuOpen(false);
@@ -111,10 +158,18 @@ export default function Header() {
               >
                 Book a Consultation
               </Button>
-            </li>
-          </ul>
-        </nav>
-      )}
-    </header>
+              <div className="grid grid-cols-2 gap-3">
+                <Button as="a" href={telHref} variant="outlineLight">
+                  <Phone size={16} aria-hidden="true" /> Call
+                </Button>
+                <Button as="a" href={whatsappHref()} target="_blank" rel="noopener" variant="whatsapp">
+                  <WhatsAppIcon size={17} /> WhatsApp
+                </Button>
+              </div>
+            </m.div>
+          </m.nav>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

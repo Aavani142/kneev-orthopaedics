@@ -1,6 +1,7 @@
-import { ArrowRight, Check, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { useLeadModal } from './LeadModalContext.jsx';
 import { KneeArthritisComparison, KneeReplacementIllustration } from './illustrations.jsx';
+import { DrawLine, Reveal, SplitHeading, Stagger, StaggerItem } from './motion.jsx';
 import { Button, SectionIntro } from './ui.jsx';
 
 const SYMPTOMS = [
@@ -33,18 +34,9 @@ const NON_SURGICAL = [
 ];
 
 const TYPES = [
-  {
-    name: 'Total Knee Replacement',
-    text: 'The worn joint surfaces of the knee are resurfaced with implant components. Generally considered when arthritis affects most of the joint.',
-  },
-  {
-    name: 'Partial Knee Replacement',
-    text: 'Only the damaged compartment of the knee is resurfaced, preserving healthy bone, cartilage and ligaments. Suitable only for selected patients whose arthritis is limited to one area of the knee.',
-  },
-  {
-    name: 'Revision Knee Replacement',
-    text: 'A previous knee replacement is partly or fully replaced — for example because of wear, loosening, instability, infection or persistent symptoms. These procedures are more complex and need detailed planning.',
-  },
+  ['Total Knee Replacement', 'The worn joint surfaces of the knee are resurfaced with implant components. Generally considered when arthritis affects most of the joint.'],
+  ['Partial Knee Replacement', 'Only the damaged compartment of the knee is resurfaced, preserving healthy bone, cartilage and ligaments. Suitable only for selected patients whose arthritis is limited to one area of the knee.'],
+  ['Revision Knee Replacement', 'A previous knee replacement is partly or fully replaced — for example because of wear, loosening, instability, infection or persistent symptoms. These procedures are more complex and need detailed planning.'],
 ];
 
 const EVALUATION = [
@@ -74,16 +66,19 @@ const AFTER = [
 function Timeline({ title, items }) {
   return (
     <div>
-      <h4 className="font-heading text-sm font-bold tracking-[0.12em] text-ember-ink uppercase">{title}</h4>
-      <ol className="mt-5 border-l border-forest/20">
-        {items.map(([t, d]) => (
-          <li key={t} className="relative pb-6 pl-6 last:pb-0">
-            <span className="absolute top-1.5 -left-[5px] h-[9px] w-[9px] rounded-full border-2 border-forest bg-white" aria-hidden="true" />
-            <p className="font-heading font-semibold text-forest-deep">{t}</p>
-            <p className="mt-0.5 text-[0.95rem] text-muted">{d}</p>
-          </li>
-        ))}
-      </ol>
+      <p className="kicker">{title}</p>
+      <div className="relative mt-6">
+        <DrawLine vertical className="absolute top-2 bottom-2 left-[4px] w-px text-forest/30" />
+        <Stagger as="ol" gap={0.1}>
+          {items.map(([t, d]) => (
+            <StaggerItem as="li" key={t} className="relative pb-7 pl-8 last:pb-0">
+              <span className="absolute top-2 left-0 h-[9px] w-[9px] rounded-full border border-forest bg-ivory" aria-hidden="true" />
+              <p className="font-semibold text-forest-deep">{t}</p>
+              <p className="mt-1 text-[0.95rem] text-muted">{d}</p>
+            </StaggerItem>
+          ))}
+        </Stagger>
+      </div>
     </div>
   );
 }
@@ -91,167 +86,179 @@ function Timeline({ title, items }) {
 export default function KneeReplacement() {
   const { openLeadModal } = useLeadModal();
   return (
-    <section id="knee-replacement" aria-labelledby="knee-title" data-track-section="knee-replacement" className="bg-ivory py-16 sm:py-20 lg:py-28">
+    <section id="knee-replacement" aria-labelledby="knee-title" data-track-section="knee-replacement" className="bg-white py-20 sm:py-24 lg:py-32">
       <div className="container-page">
-        {/* Intro */}
-        <div className="reveal grid gap-6 lg:grid-cols-12">
+        {/* Chapter opener */}
+        <div className="grid items-end gap-8 lg:grid-cols-12">
+          <Reveal className="text-ember-ink/70 lg:col-span-3" y={40}>
+            <span className="chapter-num" aria-hidden="true">01</span>
+          </Reveal>
           <SectionIntro
             id="knee-title"
-            className="lg:col-span-7"
-            kicker="Knee Replacement"
-            title="Understanding Knee Replacement Surgery"
+            className="lg:col-span-9"
+            kicker="Chapter one · Knee Replacement"
+            title="Understanding *knee replacement* surgery"
             lede="When knee joint damage begins to affect walking, everyday activities and quality of life, an orthopaedic evaluation can help determine the most appropriate treatment."
           />
         </div>
 
-        {/* Anatomy + arthritis */}
-        <div className="reveal mt-12 grid items-center gap-10 lg:mt-16 lg:grid-cols-12 lg:gap-14">
-          <div className="prose-body text-[1.02rem] leading-relaxed text-charcoal/85 lg:col-span-6">
-            <h3 className="h-sub mb-4">The knee joint and osteoarthritis</h3>
+        {/* Anatomy */}
+        <div className="mt-20 grid items-start gap-12 lg:mt-28 lg:grid-cols-12 lg:gap-16">
+          <Reveal className="prose-body text-[1.04rem] leading-relaxed text-charcoal/85 lg:col-span-5">
+            <h3 className="h-sub mb-6">The knee joint and osteoarthritis</h3>
             <p>
-              The knee is where the thigh bone (femur) meets the shin bone (tibia), with the kneecap (patella) at the
-              front. The ends of these bones are covered with smooth articular cartilage, which allows the joint to glide
-              and absorb load with every step. Two crescent-shaped menisci cushion the joint, and strong ligaments keep it
+              The knee is where the thigh bone (femur) meets the shin bone (tibia), with the kneecap (patella) at the front.
+              The ends of these bones are covered with smooth articular cartilage, which allows the joint to glide and
+              absorb load with every step. Two crescent-shaped menisci cushion the joint, and strong ligaments keep it
               stable.
             </p>
             <p>
-              In osteoarthritis, this cartilage gradually wears and thins. The joint space narrows, the underlying bone
-              can become irritated and small bony spurs may form at the joint margins. These changes become more common
-              with age, and can also follow earlier injuries, meniscus or ligament damage, alignment problems, excess body
-              weight or inflammatory arthritis.
+              In osteoarthritis, this cartilage gradually wears and thins. The joint space narrows, the underlying bone can
+              become irritated and small bony spurs may form at the joint margins. These changes become more common with
+              age, and can also follow earlier injuries, meniscus or ligament damage, alignment problems, excess body weight
+              or inflammatory arthritis.
             </p>
             <p>
               Changes on an X-ray do not always match how much pain a person has. That is why symptoms, examination and
               everyday function are always assessed together.
             </p>
-          </div>
-          <figure className="border border-line bg-white p-5 sm:p-8 lg:col-span-6">
+          </Reveal>
+          <Reveal as="figure" delay={0.1} className="bg-ivory p-5 sm:p-10 lg:col-span-7">
             <KneeArthritisComparison className="w-full" />
-            <figcaption className="mt-4 grid gap-3 border-t border-line pt-4 text-sm text-charcoal/85 sm:grid-cols-2">
+            <figcaption className="mt-5 grid gap-3 border-t border-line pt-5 text-sm text-charcoal/85 sm:grid-cols-2">
               <p>
-                <span className="font-heading font-bold text-forest-deep">Healthy knee:</span> smooth cartilage and an even joint space.
+                <span className="font-semibold text-forest-deep">Healthy knee:</span> smooth cartilage and an even joint space.
               </p>
               <p>
-                <span className="font-heading font-bold text-forest-deep">Osteoarthritis:</span> worn cartilage, a narrowed joint space and bone spurs.
+                <span className="font-semibold text-forest-deep">Osteoarthritis:</span> worn cartilage, a narrowed joint space and bone spurs.
               </p>
               <p className="text-xs text-muted sm:col-span-2">Simplified illustration. Not to scale.</p>
             </figcaption>
-          </figure>
+          </Reveal>
         </div>
 
         {/* Symptoms */}
-        <div className="reveal mt-16 lg:mt-24">
-          <h3 className="h-sub">Symptoms that affect everyday life</h3>
-          <ul className="mt-6 grid gap-x-8 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-24 lg:mt-32">
+          <SplitHeading as="h3" text="Symptoms that affect *everyday life*" className="h-sub" />
+          <Stagger as="ul" gap={0.06} className="mt-10 grid gap-x-10 sm:grid-cols-2 lg:grid-cols-4">
             {SYMPTOMS.map(([t, d]) => (
-              <li key={t} className="border-t border-forest/20 py-5">
-                <p className="font-heading font-semibold text-forest-deep">{t}</p>
-                <p className="mt-1 text-[0.95rem] text-muted">{d}</p>
-              </li>
+              <StaggerItem as="li" key={t} className="border-t border-forest/20 py-6">
+                <p className="font-semibold text-forest-deep">{t}</p>
+                <p className="mt-1.5 text-[0.95rem] text-muted">{d}</p>
+              </StaggerItem>
             ))}
-          </ul>
-          <p className="mt-2 text-[0.95rem] text-muted">Knee pain has many causes, and most of them do not require surgery.</p>
+          </Stagger>
+          <Reveal as="p" className="mt-4 font-serif text-lg text-forest">
+            Knee pain has many causes, and most of them do not require surgery.
+          </Reveal>
         </div>
 
         {/* When considered */}
-        <div className="reveal mt-16 grid gap-10 lg:mt-24 lg:grid-cols-12 lg:gap-14">
+        <div className="mt-24 grid gap-12 lg:mt-32 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
-            <h3 className="h-sub">When might knee replacement be considered?</h3>
-            <p className="mt-3 text-muted">A specialist may evaluate whether knee replacement is appropriate in situations such as:</p>
-            <ol className="mt-6 divide-y divide-line border-y border-line">
+            <SplitHeading as="h3" text="When might knee replacement *be considered?*" className="h-sub" />
+            <Reveal as="p" className="mt-4 text-muted">
+              A specialist may evaluate whether knee replacement is appropriate in situations such as:
+            </Reveal>
+            <Stagger as="ol" gap={0.07} className="mt-8 border-t border-line">
               {CONSIDERED.map((c, i) => (
-                <li key={c} className="flex gap-5 py-4">
-                  <span className="font-heading text-sm font-bold text-ember-ink tabular-nums">{String(i + 1).padStart(2, '0')}</span>
-                  <span className="text-charcoal/90">{c}</span>
-                </li>
+                <StaggerItem as="li" key={c} className="flex items-baseline gap-6 border-b border-line py-5">
+                  <span className="font-serif text-lg text-ember-ink">{String(i + 1).padStart(2, '0')}</span>
+                  <span className="text-[1.02rem] text-charcoal/90">{c}</span>
+                </StaggerItem>
               ))}
-            </ol>
-            <p className="mt-5 flex gap-2.5 text-[0.95rem] text-charcoal/85">
+            </Stagger>
+            <Reveal as="p" className="mt-6 flex gap-3 text-[0.95rem] text-charcoal/85">
               <Info size={18} className="mt-0.5 shrink-0 text-forest" aria-hidden="true" />
-              The final decision depends on a clinical evaluation, and is made together with you after a clear discussion
-              of the expected benefits and risks.
-            </p>
+              The final decision depends on a clinical evaluation, and is made together with you after a clear discussion of
+              the expected benefits and risks.
+            </Reveal>
           </div>
-          <aside className="self-start bg-sage p-6 sm:p-8 lg:col-span-5">
-            <p className="kicker">Conservative first</p>
-            <h4 className="mt-3 text-lg font-bold">Non-surgical care is usually explored first</h4>
-            <ul className="list-square mt-4 space-y-2 text-[0.95rem] text-charcoal/85">
+          <Reveal as="aside" delay={0.15} className="self-start bg-forest-deep p-8 text-white sm:p-10 lg:col-span-5 lg:mt-16">
+            <p className="kicker kicker-light">Conservative first</p>
+            <h4 className="mt-5 font-serif text-[1.5rem] leading-tight font-bold text-white">Non-surgical care is usually explored first</h4>
+            <ul className="list-square mt-6 space-y-2.5 text-white/85">
               {NON_SURGICAL.map((n) => (
                 <li key={n}>{n}</li>
               ))}
             </ul>
-            <p className="mt-4 text-sm text-muted">Surgery is considered when structured non-surgical care does not provide adequate relief.</p>
-          </aside>
+            <p className="mt-6 border-t border-white/15 pt-5 text-sm text-white/65">
+              Surgery is considered when structured non-surgical care does not provide adequate relief.
+            </p>
+          </Reveal>
         </div>
 
         {/* Types */}
-        <div className="reveal mt-16 grid items-start gap-10 lg:mt-24 lg:grid-cols-12 lg:gap-14">
-          <figure className="order-2 border border-line bg-white p-5 sm:p-8 lg:order-1 lg:col-span-5">
+        <div className="mt-24 grid items-start gap-12 lg:mt-32 lg:grid-cols-12 lg:gap-16">
+          <Reveal as="figure" className="order-2 bg-ivory p-6 sm:p-10 lg:order-1 lg:sticky lg:top-28 lg:col-span-5">
             <KneeReplacementIllustration className="mx-auto w-full max-w-sm" />
-            <figcaption className="mt-3 text-xs text-muted">Components of a total knee replacement. Simplified illustration.</figcaption>
-          </figure>
+            <figcaption className="mt-4 text-xs text-muted">Components of a total knee replacement. Simplified illustration.</figcaption>
+          </Reveal>
           <div className="order-1 lg:order-2 lg:col-span-7">
-            <h3 className="h-sub">Types of knee replacement</h3>
-            <div className="mt-6 divide-y divide-line border-y border-line">
-              {TYPES.map((t, i) => (
-                <div key={t.name} className="grid gap-2 py-6 sm:grid-cols-[3rem_1fr]">
-                  <span className="font-heading text-sm font-bold text-ember-ink">{String(i + 1).padStart(2, '0')}</span>
+            <SplitHeading as="h3" text="Types of *knee replacement*" className="h-sub" />
+            <Stagger gap={0.1} className="mt-8 border-t border-line">
+              {TYPES.map(([name, text], i) => (
+                <StaggerItem key={name} className="grid gap-3 border-b border-line py-8 sm:grid-cols-[5rem_1fr]">
+                  <span className="font-serif text-4xl leading-none text-ember-ink/80">{i + 1}</span>
                   <div>
-                    <h4 className="text-lg font-bold">{t.name}</h4>
-                    <p className="mt-1.5 text-[0.98rem] leading-relaxed text-muted">{t.text}</p>
+                    <h4 className="font-serif text-[1.35rem] leading-tight font-bold">{name}</h4>
+                    <p className="mt-2 text-[1rem] leading-relaxed text-muted">{text}</p>
                   </div>
-                </div>
+                </StaggerItem>
               ))}
-            </div>
-            <p className="mt-5 text-[0.95rem] text-charcoal/85">
+            </Stagger>
+            <Reveal as="p" className="mt-6 text-[0.98rem] text-charcoal/85">
               The appropriate procedure, if any, depends on the extent and location of joint damage, the condition of the
               ligaments, alignment, general health, activity level and clinical findings.
-            </p>
+            </Reveal>
           </div>
         </div>
+      </div>
 
-        {/* Evaluation */}
-        <div className="reveal mt-16 bg-forest px-6 py-10 text-white sm:px-10 lg:mt-24 lg:px-14 lg:py-14">
-          <div className="grid gap-8 lg:grid-cols-12 lg:gap-14">
-            <div className="lg:col-span-5">
-              <p className="kicker kicker-light">Surgical evaluation</p>
-              <h3 className="h-sub mt-3 !text-white">Careful evaluation and planning</h3>
-              <p className="mt-3 text-white/75">
-                Before surgery is recommended, your knee and general health are assessed in detail, and the plan is made for
-                you as an individual.
-              </p>
-            </div>
-            <ul className="grid gap-x-8 gap-y-3.5 sm:grid-cols-2 lg:col-span-7">
-              {EVALUATION.map((e) => (
-                <li key={e} className="flex gap-3 text-[0.98rem] text-white/90">
-                  <Check size={18} className="mt-0.5 shrink-0 text-ember-light" aria-hidden="true" />
-                  {e}
-                </li>
-              ))}
-            </ul>
+      {/* Evaluation — full-bleed band */}
+      <div className="on-dark mt-24 bg-forest py-16 text-white lg:mt-32 lg:py-20">
+        <div className="container-page grid gap-10 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-5">
+            <p className="kicker kicker-light">Surgical evaluation</p>
+            <SplitHeading as="h3" text="Careful evaluation *and planning*" className="h-sub mt-5 !text-white" />
+            <Reveal as="p" className="mt-5 text-white/70">
+              Before surgery is recommended, your knee and general health are assessed in detail, and the plan is made for you
+              as an individual.
+            </Reveal>
           </div>
+          <Stagger as="ul" gap={0.06} className="grid gap-x-10 sm:grid-cols-2 lg:col-span-7">
+            {EVALUATION.map((e, i) => (
+              <StaggerItem as="li" key={e} className="flex gap-4 border-b border-white/12 py-4 text-white/90">
+                <span className="font-serif text-ember-light">{String(i + 1).padStart(2, '0')}</span>
+                {e}
+              </StaggerItem>
+            ))}
+          </Stagger>
         </div>
+      </div>
 
-        {/* Before / after */}
-        <div className="reveal mt-16 lg:mt-24">
-          <h3 className="h-sub">Before and after surgery</h3>
-          <div className="mt-8 grid gap-10 md:grid-cols-2 lg:gap-16">
-            <Timeline title="Before surgery" items={BEFORE} />
-            <Timeline title="After surgery" items={AFTER} />
-          </div>
-          <p className="mt-8 max-w-3xl border-l-2 border-ember pl-4 text-[0.95rem] text-charcoal/85">
+      {/* Before / after */}
+      <div className="container-page mt-24 lg:mt-32">
+        <SplitHeading as="h3" text="Before and *after surgery*" className="h-sub" />
+        <div className="mt-10 grid gap-12 md:grid-cols-2 lg:gap-20">
+          <Timeline title="Before surgery" items={BEFORE} />
+          <Timeline title="After surgery" items={AFTER} />
+        </div>
+        <Reveal className="mt-14 flex flex-col gap-8 border-t border-line pt-10 lg:flex-row lg:items-center lg:justify-between">
+          <p className="max-w-2xl font-serif text-[1.15rem] leading-snug text-forest-deep">
             Recovery differs from person to person. Your team will explain what to expect in your situation — no fixed
             recovery period or outcome can be guaranteed.
           </p>
           <Button
             data-cta="consultation"
             size="lg"
-            className="mt-10 w-full sm:w-auto"
+            arrow
+            className="shrink-0"
             onClick={() => openLeadModal({ source: 'knee-replacement', treatment: 'knee-replacement' })}
           >
-            Discuss Knee Replacement With Our Orthopaedic Team <ArrowRight size={18} aria-hidden="true" className="hidden sm:block" />
+            Discuss Knee Replacement With Our Team
           </Button>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

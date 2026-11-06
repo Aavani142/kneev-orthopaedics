@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { AnimatePresence, m } from 'framer-motion';
+import { EASE } from './motion.jsx';
 import { X } from 'lucide-react';
 import { useLeadModal } from './LeadModalContext.jsx';
 import LeadForm from './LeadForm.jsx';
-import consultRoom from '../assets/img/hero-portrait-600.webp';
+import avatar from '../assets/img/doctor-portrait.webp';
 
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([tabindex="-1"]), select:not([disabled]), textarea, [tabindex]:not([tabindex="-1"])';
 
@@ -55,61 +57,65 @@ function Dialog({ modal, onClose }) {
   }, [modal.auto, onClose]);
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center sm:items-center sm:p-5" data-track-section="popup">
-      <div className="animate-fade-in absolute inset-0 bg-forest-deep/70" onClick={onClose} aria-hidden="true" />
-      <div
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-3 sm:p-5" data-track-section="popup">
+      <m.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.35 }}
+        className="absolute inset-0 bg-forest-night/60 backdrop-blur-[2px]"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <m.div
+        initial={{ opacity: 0, y: 40, scale: 0.97 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 24, scale: 0.98 }}
+        transition={{ duration: 0.55, ease: EASE }}
         ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="lead-modal-title"
         aria-describedby="lead-modal-desc"
         tabIndex={-1}
-        className="animate-modal-in relative flex max-h-[94dvh] w-full flex-col overflow-hidden rounded-t-xl bg-white shadow-soft outline-none sm:max-h-[92dvh] sm:max-w-[30rem] sm:rounded-xl md:max-w-[54rem]"
+        className="relative flex max-h-[min(90dvh,860px)] w-full max-w-[34rem] flex-col overflow-hidden rounded-2xl bg-white shadow-[0_24px_64px_-24px_rgb(16_58_47/0.55)] outline-none"
       >
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-2.5 right-2.5 z-10 flex h-11 w-11 items-center justify-center rounded-full bg-white text-charcoal transition-colors hover:bg-ivory"
+          className="absolute top-3 right-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-ivory text-charcoal transition-colors hover:bg-sage"
           aria-label="Close consultation form"
         >
-          <X size={22} aria-hidden="true" />
+          <X size={20} aria-hidden="true" />
         </button>
 
-        <div className="grid min-h-0 flex-1 overflow-y-auto overscroll-contain md:grid-cols-[0.82fr_1.18fr]">
-          {/* Desktop: photograph + short message */}
-          <aside className="relative hidden overflow-hidden bg-forest-deep md:block">
-            <img src={consultRoom} alt="" className="absolute inset-0 h-full w-full object-cover object-[60%_center]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-forest-deep via-forest-deep/55 to-forest-deep/0" />
-            <div className="relative flex h-full flex-col justify-end p-7 text-white">
-              <p className="kicker kicker-light">KNEEV Orthopaedic Center</p>
-              <p className="mt-3 font-heading text-xl leading-snug font-semibold">
-                Every consultation is personally conducted by the treating surgeon.
-              </p>
-              <p className="mt-3 text-sm text-white/75">Jayanagar, Bengaluru · Monday – Saturday, 9 AM – 7 PM</p>
-            </div>
-          </aside>
-
-          <div className="p-5 pt-6 sm:p-8">
-            <div className="pr-10">
-              <h2 id="lead-modal-title" className="text-[1.45rem] leading-tight font-bold sm:text-[1.7rem]">
-                Book Your Orthopaedic Consultation
-              </h2>
-              <p id="lead-modal-desc" className="mt-2 text-[0.95rem] text-muted">
-                Tell us a little about your concern. Our team will help you with the next steps.
-              </p>
-            </div>
-            <div className="mt-6">
-              <LeadForm source={modal.source} defaultTreatment={modal.treatment} />
-            </div>
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pt-5 pb-6 sm:px-8 sm:pt-7 sm:pb-8">
+          <div className="flex items-center gap-3 pr-12">
+            <img src={avatar} alt="" width="44" height="44" className="h-11 w-11 shrink-0 rounded-full object-cover object-[50%_18%]" />
+            <p className="text-sm leading-snug text-muted">
+              <span className="block font-heading font-bold text-forest-deep">KNEEV Orthopaedic Center</span>
+              Jayanagar, Bengaluru · Mon–Sat, 9 AM–7 PM
+            </p>
+          </div>
+          <h2 id="lead-modal-title" className="mt-5 text-[1.6rem] leading-[1.15] font-bold sm:text-[1.9rem]">
+            Book Your Orthopaedic Consultation
+          </h2>
+          <p id="lead-modal-desc" className="mt-2 text-[0.95rem] text-muted">
+            Tell us a little about your concern. Our team will call you back to help with the next steps.
+          </p>
+          <div className="mt-5">
+            <LeadForm source={modal.source} defaultTreatment={modal.treatment} />
           </div>
         </div>
-      </div>
+      </m.div>
     </div>
   );
 }
 
 export default function ConsultationPopup() {
   const { modal, closeLeadModal } = useLeadModal();
-  if (!modal.open) return null;
-  return createPortal(<Dialog key={modal.key} modal={modal} onClose={closeLeadModal} />, document.body);
+  return createPortal(
+    <AnimatePresence>{modal.open && <Dialog key={modal.key} modal={modal} onClose={closeLeadModal} />}</AnimatePresence>,
+    document.body,
+  );
 }
