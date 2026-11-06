@@ -1,29 +1,13 @@
-import { Phone } from 'lucide-react';
 import logo from '../assets/img/logo.png';
-import { DISCLAIMER, SITE, telHref, whatsappHref } from '../config/site.js';
-import { Reveal } from './motion.jsx';
-import { Button, WhatsAppIcon } from './ui.jsx';
+import { DISCLAIMER, SITE, telHref } from '../config/site.js';
 
 export default function Footer() {
   const { address: a } = SITE;
   return (
     <footer data-track-section="footer" className="bg-forest-night pb-[calc(5.5rem+env(safe-area-inset-bottom))] text-sm text-white/65 md:pb-10">
       <div className="container-page">
-        <div className="flex flex-col gap-6 border-t border-white/10 py-12 md:flex-row md:items-center md:justify-between">
-          <Reveal as="p" className="font-serif text-[1.6rem] leading-tight text-white sm:text-[2rem]">
-            Speak with the <span className="text-ember-light">KNEEV team.</span>
-          </Reveal>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button as="a" href={telHref} variant="light">
-              <Phone size={16} aria-hidden="true" /> {SITE.phoneDisplay}
-            </Button>
-            <Button as="a" href={whatsappHref()} target="_blank" rel="noopener" variant="whatsapp">
-              <WhatsAppIcon size={18} /> WhatsApp
-            </Button>
-          </div>
-        </div>
 
-        <div className="grid gap-10 border-t border-white/10 pt-12 sm:grid-cols-2 lg:grid-cols-12">
+        <div className="grid gap-10 pt-16 sm:grid-cols-2 lg:grid-cols-12">
           <div className="lg:col-span-4">
             <img src={logo} alt="KNEEV Orthopaedic Center" width="400" height="178" loading="lazy" className="h-12 w-auto brightness-0 invert" />
             <p className="mt-4 max-w-xs">Conservative-first orthopaedic care in Jayanagar, Bengaluru.</p>

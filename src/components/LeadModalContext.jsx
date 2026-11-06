@@ -1,16 +1,19 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { POPUP_DELAY_MS } from '../config/site.js';
-import { getLeadStatus } from '../services/leadService.js';
+import { ENQUIRY_SENT_SESSION_KEY } from '../services/leadService.js';
 import { trackPopupOpen } from '../services/trackingService.js';
 
 const LeadModalContext = createContext(null);
-const SESSION_KEY = 'kneev_popup_closed';
 
+/**
+ * The enquiry popup opens automatically every time the website is opened or reloaded
+ * (after POPUP_DELAY_MS). The only exception: a visitor who has already submitted an
+ * enquiry is not asked again until they close the browser. `?popup=1` always forces it.
+ */
 function popupSuppressed() {
-  if (new URLSearchParams(window.location.search).has('popup')) return false; // ?popup=1 forces it (testing)
-  if (getLeadStatus()?.state === 'submitted') return true; // never re-ask someone who has enquired
+  if (new URLSearchParams(window.location.search).has('popup')) return false;
   try {
-    return sessionStorage.getItem(SESSION_KEY) === '1';
+    return sessionStorage.getItem(ENQUIRY_SENT_SESSION_KEY) === '1';
   } catch {
     return false;
   }
@@ -27,26 +30,18 @@ export function LeadModalProvider({ children }) {
     setModal((m) => ({ open: true, source, treatment, auto: false, key: m.key + 1 }));
   }, []);
 
+  // Closing just closes it for this page view; it opens again on the next visit or reload.
   const closeLeadModal = useCallback(() => {
     setModal((m) => ({ ...m, open: false }));
-    // Closing only snoozes the popup for this browser session; it returns on the next visit.
-    try {
-      sessionStorage.setItem(SESSION_KEY, '1');
-    } catch {
-      /* storage unavailable */
-    }
   }, []);
 
-  // Visitor is filling in an inline form: never interrupt with the popup.
+  // Visitor is already typing in the on-page form: don't interrupt with the popup.
   const markEngaged = useCallback(() => {
     engaged.current = true;
   }, []);
 
-  // Popup on opening the site, after a short delay. Shown once per browser session;
-  // never shown again after a successful enquiry.
   useEffect(() => {
     if (popupSuppressed()) return undefined;
-
     const timer = setTimeout(() => {
       if (engaged.current || openRef.current || popupSuppressed()) return;
       trackPopupOpen('auto');

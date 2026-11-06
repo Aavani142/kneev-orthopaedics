@@ -3,8 +3,9 @@ import { normalizeMobile, validateLead } from '../../shared/lead-schema.js';
 import { submitLead } from '../services/leadService.js';
 import { trackLead } from '../services/trackingService.js';
 
-const EMPTY = { name: '', mobile: '', city: '', treatment: '', contactTime: '', consent: false, consentAt: null, company: '' };
-export const FIELD_ORDER = ['name', 'mobile', 'city', 'contactTime', 'treatment', 'consent'];
+// `treatment` is hidden context (from the service a visitor clicked); `city` is labelled "Location".
+const EMPTY = { name: '', mobile: '', city: '', treatment: '', company: '' };
+export const FIELD_ORDER = ['name', 'mobile', 'city'];
 
 /**
  * Form state, validation and submission for the consultation form.
@@ -23,7 +24,6 @@ export function useLeadForm({ source, defaultTreatment = '' }) {
 
   const setField = useCallback((name, value) => {
     const next = { ...valuesRef.current, [name]: value };
-    if (name === 'consent') next.consentAt = value ? new Date().toISOString() : null;
     valuesRef.current = next;
     setValues(next);
     if (touchedRef.current[name]) setErrors(validateLead(next));

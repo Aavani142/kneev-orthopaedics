@@ -119,9 +119,7 @@ export default function Hero() {
               <p className="mt-0.5 text-sm text-muted">{DOCTOR.title}</p>
               <p className="mt-3 flex items-center justify-between border-t border-line pt-3 text-sm">
                 <span>Mon – Sat, 9 AM – 7 PM</span>
-                <a href="#doctor" className="link-line font-semibold text-forest">
-                  Profile
-                </a>
+                <a href={telHref} className="link-line font-semibold text-forest">Call</a>
               </p>
             </m.div>
           </div>

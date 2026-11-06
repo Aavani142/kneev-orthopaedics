@@ -16,10 +16,17 @@ export default function FloatingContact() {
   const [hidden, setHidden] = useState(false);
 
   useEffect(() => {
-    const target = document.getElementById('book');
-    if (!target || !('IntersectionObserver' in window)) return undefined;
-    const io = new IntersectionObserver(([e]) => setHidden(e.isIntersecting), { threshold: 0.12 });
-    io.observe(target);
+    const targets = ['book'].map((id) => document.getElementById(id)).filter(Boolean);
+    if (!targets.length || !('IntersectionObserver' in window)) return undefined;
+    const visible = new Set();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => (e.isIntersecting ? visible.add(e.target) : visible.delete(e.target)));
+        setHidden(visible.size > 0);
+      },
+      { threshold: 0.12 },
+    );
+    targets.forEach((t) => io.observe(t));
     return () => io.disconnect();
   }, []);
 

@@ -12,7 +12,6 @@ import { appendFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import {
   ATTRIBUTION_KEYS,
-  CONSENT_TEXT,
   normalizeMobile,
   treatmentLabel,
   validateLead,
@@ -58,10 +57,8 @@ function buildLead(body, meta) {
     leadId: clip(body.leadId, 80) || `srv-${Date.now()}`,
     name: clip(body.name, 80).trim(),
     mobile: normalizeMobile(body.mobile),
-    city: clip(body.city, 60).trim(),
+    city: clip(body.city, 80).trim(), // shown to visitors as "Location"
     treatment: treatmentLabel(body.treatment),
-    contactTime: clip(body.contactTime, 60),
-    consent: { given: body.consent === true, text: CONSENT_TEXT, timestamp: clip(body.consentAt, 40) },
     submittedAt: clip(body.submittedAt, 40),
     receivedAt: new Date().toISOString(),
     source: clip(body.source, 40),
@@ -76,11 +73,9 @@ function leadRows(lead) {
   return [
     ['Name', lead.name],
     ['Mobile', `+91 ${lead.mobile}`],
-    ['City', lead.city],
+    ['Location', lead.city],
     ['Treatment', lead.treatment],
-    ['Preferred contact time', lead.contactTime],
     ['Form', lead.source],
-    ['Consent', `${lead.consent.given ? 'Yes' : 'No'} at ${lead.consent.timestamp}`],
     ['Submitted at', lead.submittedAt],
     ['Received at (server)', lead.receivedAt],
     ...Object.entries(lead.attribution),
@@ -109,7 +104,7 @@ function emailContent(lead) {
     .join('');
   return {
     subject: `New enquiry: ${lead.treatment} – ${lead.name}`,
-    html: `<div style="font-family:Arial,sans-serif;color:#252925"><h2 style="color:#174B3B">New consultation enquiry</h2><table style="border-collapse:collapse">${rows}</table><p style="color:#5E645F;font-size:12px">Consent text shown to the visitor: ${esc(lead.consent.text)}</p></div>`,
+    html: `<div style="font-family:Arial,sans-serif;color:#252925"><h2 style="color:#174B3B">New consultation enquiry</h2><table style="border-collapse:collapse">${rows}</table></div>`,
     text: leadRows(lead).map(([k, v]) => `${k}: ${v}`).join('\n'),
   };
 }
@@ -150,9 +145,8 @@ async function sendWhatsApp(lead, env) {
   if (!token || !phoneId || !to) return { configured: false };
   const campaign = campaignOf(lead);
 
-  // Business-initiated WhatsApp messages need an approved template with six
-  // body parameters: {{1}} name, {{2}} mobile, {{3}} city, {{4}} treatment,
-  // {{5}} preferred time, {{6}} campaign/source.
+  // Business-initiated WhatsApp messages need an approved template with five
+  // body parameters: {{1}} name, {{2}} mobile, {{3}} location, {{4}} treatment, {{5}} campaign/source.
   const message = env.WHATSAPP_TEMPLATE_NAME
     ? {
         type: 'template',
@@ -162,7 +156,7 @@ async function sendWhatsApp(lead, env) {
           components: [
             {
               type: 'body',
-              parameters: [lead.name, `+91 ${lead.mobile}`, lead.city, lead.treatment, lead.contactTime, campaign].map((text) => ({
+              parameters: [lead.name, `+91 ${lead.mobile}`, lead.city, lead.treatment, campaign].map((text) => ({
                 type: 'text',
                 text: clip(text, 120) || '-',
               })),
@@ -178,9 +172,8 @@ async function sendWhatsApp(lead, env) {
             '*New KNEEV consultation enquiry*',
             `Name: ${lead.name}`,
             `Mobile: +91 ${lead.mobile}`,
-            `City: ${lead.city}`,
+            `Location: ${lead.city}`,
             `Treatment: ${lead.treatment}`,
-            `Preferred time: ${lead.contactTime}`,
             `Source: ${campaign}`,
           ].join('\n'),
         },

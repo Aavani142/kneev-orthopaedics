@@ -1,21 +1,24 @@
 import Header from '../components/Header.jsx';
 import Hero from '../components/Hero.jsx';
 import Services from '../components/Services.jsx';
-import Interlude from '../components/Interlude.jsx';
-import KneeReplacement from '../components/KneeReplacement.jsx';
-import ACLReconstruction from '../components/ACLReconstruction.jsx';
-import WhyKneev from '../components/WhyKneev.jsx';
-import DoctorProfile from '../components/DoctorProfile.jsx';
-import PatientJourney from '../components/PatientJourney.jsx';
-import Testimonials from '../components/Testimonials.jsx';
-import ClinicGallery from '../components/ClinicGallery.jsx';
-import FAQ from '../components/FAQ.jsx';
-import ContactSection from '../components/ContactSection.jsx';
+import NotSure from '../components/NotSure.jsx';
 import AppointmentSection from '../components/AppointmentSection.jsx';
+import WhyKneev from '../components/WhyKneev.jsx';
+import ClinicGallery from '../components/ClinicGallery.jsx';
+import ContactSection from '../components/ContactSection.jsx';
 import Footer from '../components/Footer.jsx';
 import MobileActionBar from '../components/MobileActionBar.jsx';
 import FloatingContact from '../components/FloatingContact.jsx';
 
+/*
+ * Page order:
+ *   1 Hero (+ marquee) - 2 How we can help - 3 "Not sure?" prompt - 4 Enquiry form
+ *   5 Why KNEEV - 6 Inside KNEEV - 7 Location & contact - 8 Google Map - 9 Footer
+ * The enquiry form (#book) and the popup share one <LeadForm> and submission handler.
+ *
+ * Not rendered (components kept in src/components for possible reuse):
+ * KneeReplacement, ACLReconstruction, DoctorProfile, PatientJourney, Testimonials, FAQ, Interlude.
+ */
 export default function Home() {
   return (
     <>
@@ -26,28 +29,11 @@ export default function Home() {
       <main id="main">
         <Hero />
         <Services />
-        <Interlude
-          source="band-services"
-          title="Not sure which treatment *you need?*"
-          text="That is what a consultation is for. Speak with our team and we will guide you to the right assessment."
-        />
-        <KneeReplacement />
-        <ACLReconstruction />
-        <WhyKneev />
-        <Interlude
-          tone="dark"
-          source="band-second-opinion"
-          title="Already been *advised surgery?*"
-          text="Bring your reports for a second opinion. Non-surgical options are always discussed first."
-        />
-        <DoctorProfile />
-        <PatientJourney />
-        <Testimonials />
-        <ClinicGallery />
-        <FAQ />
-        <ContactSection />
-        {/* Same enquiry form as the popup, directly above the footer */}
+        <NotSure />
         <AppointmentSection />
+        <WhyKneev />
+        <ClinicGallery />
+        <ContactSection />
       </main>
       <Footer />
       <MobileActionBar />

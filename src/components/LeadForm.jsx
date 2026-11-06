@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react';
-import { AlertCircle, Check, CheckCircle2, ChevronDown, Loader2, Lock, Phone } from 'lucide-react';
-import { CONTACT_TIMES, TREATMENTS, normalizeMobile } from '../../shared/lead-schema.js';
+import { AlertCircle, CheckCircle2, Loader2, Lock, Phone } from 'lucide-react';
+import { normalizeMobile } from '../../shared/lead-schema.js';
 import { SITE, telHref } from '../config/site.js';
 import { useLeadForm } from '../hooks/useLeadForm.js';
 import { getLeadStatus, leadWhatsAppHref } from '../services/leadService.js';
@@ -46,7 +46,6 @@ export default function LeadForm({ source, defaultTreatment = '', onEngaged, sub
 
   if (status === 'success') {
     const firstName = values.name.trim().split(/\s+/)[0];
-    const time = values.contactTime.startsWith('Any') ? 'during clinic hours' : `in the ${values.contactTime.split(' (')[0].toLowerCase()}`;
     return (
       <div className="animate-fade-in py-2" role="status" aria-live="polite">
         <CheckCircle2 size={40} className="text-forest" aria-hidden="true" />
@@ -55,7 +54,7 @@ export default function LeadForm({ source, defaultTreatment = '', onEngaged, sub
         </h3>
         <p className="mt-2 text-muted">
           Your request has been received. A member of our team will call you on{' '}
-          <strong className="whitespace-nowrap text-charcoal">+91 {normalizeMobile(values.mobile)}</strong> {time}.
+          <strong className="whitespace-nowrap text-charcoal">+91 {normalizeMobile(values.mobile)}</strong> during clinic hours.
         </p>
         <p className="mt-2 text-sm text-muted">Clinic hours: Monday – Saturday, 9:00 AM – 7:00 PM.</p>
         <div className="mt-6 border-t border-line pt-5">
@@ -106,74 +105,15 @@ export default function LeadForm({ source, defaultTreatment = '', onEngaged, sub
         <FieldError id={id('mobile-err')} message={errorFor('mobile')} />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <label htmlFor={id('city')} className={labelCls}>City</label>
-          <input
-            id={id('city')} data-field="city" className="field-input" name="city" autoComplete="address-level2"
-            placeholder="e.g. Bengaluru" maxLength={60} value={values.city}
-            onChange={(e) => setField('city', e.target.value)} onBlur={() => touch('city')}
-            aria-invalid={!!errorFor('city')} aria-describedby={describe('city')} required
-          />
-          <FieldError id={id('city-err')} message={errorFor('city')} />
-        </div>
-        <div>
-          <label htmlFor={id('time')} className={labelCls}>Preferred contact time</label>
-          <div className="relative">
-            <select
-              id={id('time')} data-field="contactTime" name="contactTime" value={values.contactTime}
-              className={`field-input appearance-none pr-10 ${values.contactTime ? '' : 'text-[#8b918c]'}`}
-              onChange={(e) => setField('contactTime', e.target.value)} onBlur={() => touch('contactTime')}
-              aria-invalid={!!errorFor('contactTime')} aria-describedby={describe('contactTime')} required
-            >
-              <option value="" disabled>Select a time</option>
-              {CONTACT_TIMES.map((t) => (
-                <option key={t} value={t} className="text-charcoal">{t}</option>
-              ))}
-            </select>
-            <ChevronDown size={18} className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted" aria-hidden="true" />
-          </div>
-          <FieldError id={id('contactTime-err')} message={errorFor('contactTime')} />
-        </div>
-      </div>
-
-      <fieldset aria-describedby={describe('treatment')}>
-        <legend className={labelCls}>Treatment of interest</legend>
-        <div className="grid grid-cols-2 gap-2">
-          {TREATMENTS.map((t, i) => (
-            <label
-              key={t.value}
-              className="flex min-h-12 cursor-pointer items-center gap-2.5 rounded-md border border-line-strong bg-white px-3 py-2 text-[0.875rem] leading-snug text-charcoal transition-colors hover:border-forest/50 has-[:checked]:border-forest has-[:checked]:bg-sage has-[:checked]:font-medium has-[:checked]:text-forest-deep has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ember"
-            >
-              <input
-                type="radio" name={id('treatment')} value={t.value} className="peer sr-only"
-                data-field={i === 0 ? 'treatment' : undefined} checked={values.treatment === t.value}
-                onChange={() => { touch('treatment'); setField('treatment', t.value); }}
-              />
-              <span className="flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border border-[#a9afa9] peer-checked:border-forest peer-checked:bg-forest" aria-hidden="true">
-                <Check size={11} strokeWidth={3} className="text-white" />
-              </span>
-              {t.label}
-            </label>
-          ))}
-        </div>
-        <FieldError id={id('treatment-err')} message={errorFor('treatment')} />
-      </fieldset>
-
       <div>
-        <label className="flex cursor-pointer items-start gap-3 text-[0.825rem] leading-snug text-muted">
-          <input
-            type="checkbox" data-field="consent" checked={values.consent}
-            onChange={(e) => { touch('consent'); setField('consent', e.target.checked); }}
-            aria-invalid={!!errorFor('consent')} aria-describedby={describe('consent')}
-            className="mt-0.5 h-5 w-5 shrink-0 cursor-pointer accent-forest" required
-          />
-          <span>
-            I agree to be contacted by KNEEV Orthopaedic Center by phone call or WhatsApp about my enquiry, and I have read the{' '}
-            <a href={SITE.privacyPath} target="_blank" rel="noopener" className="font-medium text-forest underline underline-offset-2">Privacy Policy</a>.
-          </span>
-        </label>
-        <FieldError id={id('consent-err')} message={errorFor('consent')} />
+        <label htmlFor={id('city')} className={labelCls}>Location</label>
+        <input
+          id={id('city')} data-field="city" className="field-input" name="location" autoComplete="address-level2"
+          placeholder="e.g. Jayanagar, Bengaluru" maxLength={80} value={values.city}
+          onChange={(e) => setField('city', e.target.value)} onBlur={() => touch('city')}
+          aria-invalid={!!errorFor('city')} aria-describedby={describe('city')} required
+        />
+        <FieldError id={id('city-err')} message={errorFor('city')} />
       </div>
 
       {/* Honeypot: hidden from people, filled by bots */}
@@ -204,7 +144,8 @@ export default function LeadForm({ source, defaultTreatment = '', onEngaged, sub
         ) : status === 'error' ? 'Try Again' : submitLabel}
       </Button>
       <p className="flex items-center justify-center gap-1.5 text-center text-xs text-muted">
-        <Lock size={12} aria-hidden="true" /> Please do not share medical reports here. Your details are used only to respond to your enquiry.
+        <Lock size={12} aria-hidden="true" /> Your details are used only to respond to your enquiry.{' '}
+        <a href={SITE.privacyPath} target="_blank" rel="noopener" className="underline underline-offset-2">Privacy Policy</a>
       </p>
     </form>
   );

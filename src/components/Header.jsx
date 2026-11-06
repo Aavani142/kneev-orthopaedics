@@ -8,9 +8,9 @@ import { EASE } from './motion.jsx';
 import { Button, WhatsAppIcon } from './ui.jsx';
 
 const LINKS = [
-  { href: '#knee-replacement', label: 'Knee Replacement' },
-  { href: '#acl-reconstruction', label: 'ACL Surgery' },
-  { href: '#doctor', label: 'About the Doctor' },
+  { href: '#services', label: 'How We Help' },
+  { href: '#why-kneev', label: 'Why KNEEV' },
+  { href: '#clinic', label: 'Inside KNEEV' },
   { href: '#contact', label: 'Contact' },
 ];
 

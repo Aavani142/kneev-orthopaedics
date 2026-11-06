@@ -1,13 +1,12 @@
 import { Phone } from 'lucide-react';
-import team from '../assets/img/team.webp';
 import { SITE, telHref, whatsappHref } from '../config/site.js';
 import { useLeadModal } from './LeadModalContext.jsx';
 import LeadForm from './LeadForm.jsx';
-import { ImageReveal, Reveal, SplitHeading, Stagger, StaggerItem } from './motion.jsx';
+import { Reveal, SplitHeading, Stagger, StaggerItem } from './motion.jsx';
 import { Button, WhatsAppIcon } from './ui.jsx';
 
 const NEXT = [
-  'Our team calls you back at your preferred time.',
+  'Our team calls you back during clinic hours.',
   'We arrange a consultation slot that suits you.',
   'Your knee is assessed and your options explained clearly.',
 ];
@@ -20,7 +19,7 @@ export default function AppointmentSection() {
   const { markEngaged } = useLeadModal();
   return (
     <section id="book" aria-labelledby="book-title" data-track-section="appointment-form" className="on-dark relative overflow-hidden bg-forest-night text-white">
-      <div className="container-page grid gap-14 py-20 sm:py-24 lg:grid-cols-12 lg:gap-16 lg:py-32">
+      <div className="container-page grid items-center gap-14 py-20 sm:py-24 lg:grid-cols-12 lg:gap-16 lg:py-28">
         <div className="lg:col-span-6">
           <Reveal as="p" className="kicker kicker-light">
             Book a Consultation
@@ -51,15 +50,6 @@ export default function AppointmentSection() {
               </Button>
             </div>
           </Reveal>
-
-          <ImageReveal
-            src={team}
-            alt="Dr. Amith P. Shetty with the KNEEV clinical team"
-            width={1000}
-            height={667}
-            from="left"
-            className="mt-14 hidden aspect-[16/9] w-full lg:block"
-          />
         </div>
 
         <Reveal delay={0.15} className="lg:col-span-6 lg:pl-6">

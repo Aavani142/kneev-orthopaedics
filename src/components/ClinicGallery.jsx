@@ -26,7 +26,7 @@ export default function ClinicGallery() {
   const [a, b, c, d, e, f] = GALLERY;
 
   return (
-    <section ref={ref} id="clinic" aria-labelledby="clinic-title" data-track-section="gallery" className="overflow-hidden bg-ivory py-20 sm:py-24 lg:py-32">
+    <section ref={ref} id="clinic" aria-labelledby="clinic-title" data-track-section="gallery" className="overflow-hidden bg-white py-20 sm:py-24 lg:pt-28 lg:pb-20">
       <div className="container-page">
         <div className="grid items-end gap-6 lg:grid-cols-12">
           <SectionIntro id="clinic-title" className="lg:col-span-8" kicker="Inside KNEEV" title="A clinic built for *orthopaedic care*" />

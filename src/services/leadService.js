@@ -1,5 +1,5 @@
 import { LEAD_ENDPOINT, SITE, whatsappHref } from '../config/site.js';
-import { CONSENT_TEXT, normalizeMobile, treatmentLabel } from '../../shared/lead-schema.js';
+import { normalizeMobile, treatmentLabel } from '../../shared/lead-schema.js';
 import { getAttribution } from './attribution.js';
 
 /*
@@ -7,6 +7,8 @@ import { getAttribution } from './attribution.js';
  * never names, phone numbers or medical details.
  */
 const STATUS_KEY = 'kneev_enquiry_status';
+/** Set for the current browser session after a successful enquiry (pauses the auto popup). */
+export const ENQUIRY_SENT_SESSION_KEY = 'kneev_enquiry_sent';
 
 export function getLeadStatus() {
   try {
@@ -40,11 +42,7 @@ export async function submitLead(values, source, leadId = newLeadId()) {
     name: values.name.trim(),
     mobile: normalizeMobile(values.mobile),
     city: values.city.trim(),
-    treatment: values.treatment,
-    contactTime: values.contactTime,
-    consent: values.consent === true,
-    consentText: CONSENT_TEXT,
-    consentAt: values.consentAt || submittedAt,
+    treatment: values.treatment || '',
     submittedAt,
     source,
     company: values.company || '', // honeypot
@@ -63,7 +61,12 @@ export async function submitLead(values, source, leadId = newLeadId()) {
     });
     const data = await res.json().catch(() => ({}));
     if (res.ok && data.ok) {
-      setLeadStatus({ state: 'submitted', submittedAt, consentAt: payload.consentAt, leadId });
+      setLeadStatus({ state: 'submitted', submittedAt, leadId });
+      try {
+        sessionStorage.setItem(ENQUIRY_SENT_SESSION_KEY, '1');
+      } catch {
+        /* storage unavailable */
+      }
       return { ok: true, leadId };
     }
     return { ok: false, leadId, error: data.error || `http_${res.status}`, fieldErrors: data.fieldErrors };
@@ -83,9 +86,8 @@ export function leadWhatsAppHref(values) {
       '',
       `Name: ${values.name?.trim() || '-'}`,
       `Mobile: ${mobile ? `+91 ${mobile}` : '-'}`,
-      `City: ${values.city?.trim() || '-'}`,
-      `Treatment of interest: ${values.treatment ? treatmentLabel(values.treatment) : '-'}`,
-      `Preferred contact time: ${values.contactTime || '-'}`,
+      `Location: ${values.city?.trim() || '-'}`,
+      ...(values.treatment ? [`Treatment of interest: ${treatmentLabel(values.treatment)}`] : []),
     ].join('\n'),
   );
 }

@@ -15,7 +15,7 @@ function LazyMap() {
     return () => io.disconnect();
   }, []);
   return (
-    <div ref={ref} className="relative h-full min-h-[360px] bg-stone grayscale-[35%]">
+    <div ref={ref} className="relative h-full bg-stone grayscale-[35%]">
       {show ? (
         <iframe
           title="Map showing KNEEV Orthopaedic Center, 2nd Block, Jayanagar, Bengaluru"
@@ -32,64 +32,84 @@ function LazyMap() {
   );
 }
 
-const row = 'flex gap-4 border-b border-line py-5';
+const row = 'flex gap-4 border-b border-line py-6';
 const icon = 'mt-0.5 shrink-0 text-forest';
 
+/** Location & contact details, then a full-width Google Map directly above the footer. */
 export default function ContactSection() {
   const { address: a } = SITE;
   return (
-    <section id="contact" aria-labelledby="contact-title" data-track-section="contact" className="bg-ivory py-20 sm:py-24 lg:py-32">
-      <div className="container-page grid gap-10 lg:grid-cols-12 lg:gap-14">
-        <div className="lg:col-span-5">
-          <SectionIntro id="contact-title" kicker="Location & Contact" title="Visit KNEEV *in Jayanagar*" />
-          <Reveal as="address" delay={0.1} className="mt-10 border-t border-line not-italic">
+    <>
+      <section id="contact" aria-labelledby="contact-title" data-track-section="contact" className="bg-ivory py-20 sm:py-24 lg:py-28">
+        <div className="container-page grid gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-4">
+            <SectionIntro id="contact-title" kicker="Location & Contact" title="Visit KNEEV *in Jayanagar*" />
+            <div className="mt-8 flex flex-col gap-3">
+              <Button as="a" href={telHref}>
+                <Phone size={17} aria-hidden="true" /> Call the Clinic
+              </Button>
+              <Button as="a" href={whatsappHref()} target="_blank" rel="noopener" variant="whatsapp">
+                <WhatsAppIcon size={19} /> WhatsApp
+              </Button>
+              <Button as="a" href={SITE.mapsUrl} target="_blank" rel="noopener" variant="outline">
+                <Navigation size={17} aria-hidden="true" /> Get Directions
+              </Button>
+            </div>
+          </div>
+
+          <Reveal as="address" delay={0.1} className="grid gap-x-12 border-t border-line not-italic sm:grid-cols-2 lg:col-span-8">
             <div className={row}>
               <MapPin size={20} className={icon} aria-hidden="true" />
               <div>
-                <p className="font-serif text-2xl text-forest-deep">{SITE.name}</p>
+                <p className="font-serif text-xl text-forest-deep">{SITE.name}</p>
                 <p className="mt-1 text-charcoal/85">
                   {a.line1},<br />
                   {a.line2}, {a.city},<br />
                   {a.region} {a.postalCode}
                 </p>
-                <p className="mt-2 text-sm text-muted">{SITE.directionsNote}</p>
+              </div>
+            </div>
+            <div className={row}>
+              <Navigation size={20} className={icon} aria-hidden="true" />
+              <div>
+                <p className="font-serif text-xl text-forest-deep">Getting here</p>
+                <p className="mt-1 text-charcoal/85">{SITE.directionsNote}</p>
               </div>
             </div>
             <div className={row}>
               <Clock size={20} className={icon} aria-hidden="true" />
-              <div className="text-charcoal/85">
-                {SITE.hours.map((h) => (
-                  <p key={h.days}>
-                    <span className="font-semibold text-charcoal">{h.days}:</span> {h.time}
-                  </p>
-                ))}
+              <div>
+                <p className="font-serif text-xl text-forest-deep">Clinic hours</p>
+                <div className="mt-1 text-charcoal/85">
+                  {SITE.hours.map((h) => (
+                    <p key={h.days}>
+                      <span className="font-semibold text-charcoal">{h.days}:</span> {h.time}
+                    </p>
+                  ))}
+                </div>
               </div>
             </div>
             <div className={row}>
               <Phone size={20} className={icon} aria-hidden="true" />
-              <a href={telHref} className="font-semibold text-forest-deep hover:underline">{SITE.phoneDisplay}</a>
-            </div>
-            <div className={row}>
-              <Mail size={20} className={icon} aria-hidden="true" />
-              <a href={`mailto:${SITE.email}`} className="break-all text-forest-deep hover:underline">{SITE.email}</a>
+              <div>
+                <p className="font-serif text-xl text-forest-deep">Phone &amp; email</p>
+                <p className="mt-1">
+                  <a href={telHref} className="font-semibold text-forest-deep hover:underline">{SITE.phoneDisplay}</a>
+                </p>
+                <p className="flex items-center gap-2">
+                  <Mail size={15} className="shrink-0 text-forest" aria-hidden="true" />
+                  <a href={`mailto:${SITE.email}`} className="break-all text-forest-deep hover:underline">{SITE.email}</a>
+                </p>
+              </div>
             </div>
           </Reveal>
-          <div className="mt-8 grid grid-cols-1 gap-3 min-[400px]:grid-cols-2">
-            <Button as="a" href={telHref}>
-              <Phone size={17} aria-hidden="true" /> Call the Clinic
-            </Button>
-            <Button as="a" href={whatsappHref()} target="_blank" rel="noopener" variant="whatsapp">
-              <WhatsAppIcon size={19} /> WhatsApp
-            </Button>
-            <Button as="a" href={SITE.mapsUrl} target="_blank" rel="noopener" variant="outline" className="min-[400px]:col-span-2">
-              <Navigation size={17} aria-hidden="true" /> Get Directions
-            </Button>
-          </div>
         </div>
-        <Reveal delay={0.15} className="min-h-[360px] overflow-hidden lg:col-span-7 lg:min-h-[560px]">
-          <LazyMap />
-        </Reveal>
-      </div>
-    </section>
+      </section>
+
+      {/* Google Maps: full width, directly above the footer */}
+      <section aria-label="Map showing the clinic location" data-track-section="map" className="relative h-[360px] bg-stone sm:h-[440px]">
+        <LazyMap />
+      </section>
+    </>
   );
 }

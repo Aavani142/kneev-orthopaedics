@@ -135,7 +135,7 @@ export function ImageReveal({
           height={height}
           loading={priority ? 'eager' : 'lazy'}
           decoding="async"
-          fetchPriority={priority ? 'high' : undefined}
+          {...(priority ? { fetchpriority: 'high' } : {})}
           style={{ y: reduce || !parallax ? 0 : y, scale: parallax && !reduce ? 1 + (parallax * 2.4) / 100 : 1 }}
           className={`h-full w-full object-cover ${imgClassName}`}
         />

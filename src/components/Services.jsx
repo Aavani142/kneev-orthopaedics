@@ -2,12 +2,12 @@ import { m } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
 import { useLeadModal } from './LeadModalContext.jsx';
 import { EASE, Reveal } from './motion.jsx';
-import { Button, SectionIntro } from './ui.jsx';
+import { SectionIntro } from './ui.jsx';
 
 // Services listed on kneevorthopaediccenter.com, ordered for this campaign.
 const SERVICES = [
-  { title: 'Knee Replacement', text: 'Total, partial and revision knee replacement when arthritis limits daily life.', href: '#knee-replacement', treatment: 'knee-replacement' },
-  { title: 'ACL Injury & Reconstruction', text: 'Assessment of ligament injuries, with reconstruction when clinically appropriate.', href: '#acl-reconstruction', treatment: 'acl-reconstruction' },
+  { title: 'Knee Replacement', text: 'Total, partial and revision knee replacement when arthritis limits daily life.', treatment: 'knee-replacement' },
+  { title: 'ACL Injury & Reconstruction', text: 'Assessment of ligament injuries, with reconstruction when clinically appropriate.', treatment: 'acl-reconstruction' },
   { title: 'Knee Pain Consultation', text: 'A thorough evaluation to find the cause of your knee pain and the right next step.', treatment: 'knee-pain' },
   { title: 'Sports Knee Injuries', text: 'Meniscus and ligament injuries, with rehabilitation tailored to your sport and goals.', treatment: 'acl-reconstruction' },
   { title: 'Second Opinion', text: 'Already advised surgery? We review your reports and talk through your options.', treatment: 'not-sure' },
@@ -17,18 +17,13 @@ const SERVICES = [
 export default function Services() {
   const { openLeadModal } = useLeadModal();
   return (
-    <section id="services" aria-labelledby="services-title" data-track-section="services" className="bg-ivory py-20 sm:py-24 lg:py-32">
+    <section id="services" aria-labelledby="services-title" data-track-section="services" className="bg-ivory pt-20 pb-14 sm:pt-24 sm:pb-16 lg:pt-32 lg:pb-16">
       <div className="container-page grid gap-12 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-4">
           <div className="lg:sticky lg:top-28">
             <SectionIntro id="services-title" kicker="How we can help" title="What brings you to *KNEEV* today?" />
             <Reveal as="p" delay={0.2} className="mt-6 max-w-sm text-muted">
               Choose your concern to learn more, or send an enquiry and our team will guide you to the right assessment.
-            </Reveal>
-            <Reveal delay={0.3} className="mt-8">
-              <Button data-cta="consultation" arrow onClick={() => openLeadModal({ source: 'services' })}>
-                Book a Consultation
-              </Button>
             </Reveal>
           </div>
         </div>
