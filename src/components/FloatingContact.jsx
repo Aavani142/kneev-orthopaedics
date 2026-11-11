@@ -5,7 +5,7 @@ import { SITE, telHref, whatsappHref } from '../config/site.js';
 import { EASE } from './motion.jsx';
 import { WhatsAppIcon } from './ui.jsx';
 
-const WA_MESSAGE = 'Hello KNEEV Orthopaedic Center, I would like to enquire about a knee consultation.';
+const WA_MESSAGE = 'Hello Kneev Orthopaedic Center, I would like to enquire about a knee consultation.';
 
 /**
  * Fixed WhatsApp + phone buttons on the right edge.
@@ -48,14 +48,14 @@ export default function FloatingContact() {
         href={whatsappHref(WA_MESSAGE)}
         target="_blank"
         rel="noopener"
-        aria-label="Chat with KNEEV on WhatsApp"
+        aria-label="Chat with Kneev on WhatsApp"
         tabIndex={hidden ? -1 : undefined}
         className={`${base} bg-[#25D366] text-white`}
       >
         <WhatsAppIcon size={26} />
         <span className={tip}>Chat on WhatsApp</span>
       </a>
-      <a href={telHref} aria-label={`Call KNEEV on ${SITE.phoneDisplay}`} tabIndex={hidden ? -1 : undefined} className={`${base} bg-forest text-white`}>
+      <a href={telHref} aria-label={`Call Kneev on ${SITE.phoneDisplay}`} tabIndex={hidden ? -1 : undefined} className={`${base} bg-forest text-white`}>
         <Phone size={21} aria-hidden="true" />
         <span className={tip}>Call {SITE.phoneDisplay}</span>
       </a>

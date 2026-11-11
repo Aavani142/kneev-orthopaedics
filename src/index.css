@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  /* Brand — from the KNEEV logo */
+  /* Brand — from the Kneev logo */
   --color-forest: #174b3b;
   --color-forest-deep: #103a2f;
   --color-forest-night: #0b2a22;

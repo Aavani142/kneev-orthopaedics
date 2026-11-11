@@ -9,8 +9,8 @@ import { Button, WhatsAppIcon } from './ui.jsx';
 
 const LINKS = [
   { href: '#services', label: 'How We Help' },
-  { href: '#why-kneev', label: 'Why KNEEV' },
-  { href: '#clinic', label: 'Inside KNEEV' },
+  { href: '#why-kneev', label: 'Why Kneev' },
+  { href: '#clinic', label: 'Inside Kneev' },
   { href: '#contact', label: 'Contact' },
 ];
 
@@ -60,10 +60,10 @@ export default function Header() {
         }`}
       >
         <div className="container-page flex h-[4.25rem] items-center justify-between gap-6 lg:h-20">
-          <a href="#top" className="relative z-10 shrink-0" aria-label="KNEEV Orthopaedic Center, back to top">
+          <a href="#top" className="relative z-10 shrink-0" aria-label="Kneev Orthopaedic Center, back to top">
             <img
               src={logo}
-              alt="KNEEV Orthopaedic Center"
+              alt="Kneev Orthopaedic Center"
               width="400"
               height="178"
               className={`h-10 w-auto transition-[filter] duration-500 lg:h-11 ${menuOpen ? 'brightness-0 invert' : ''}`}

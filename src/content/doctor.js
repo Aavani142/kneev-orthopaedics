@@ -1,12 +1,12 @@
 /**
- * Doctor profile — sourced from kneevorthopaediccenter.com (Home, Why KNEEV,
+ * Doctor profile — sourced from kneevorthopaediccenter.com (Home, Why Kneev,
  * Orthopaedic Consultation, Knee & Hip Surgery and Knee Pain pages).
  *
  * NEEDS CLINIC CONFIRMATION before these can be shown:
- *  - experience: the Home page says "over a decade"; the Why KNEEV page says
+ *  - experience: the Home page says "over a decade"; the Why Kneev page says
  *    "15+ years". Set ONE confirmed sentence below; null hides it.
  *  - affiliations: the Home page says "Consultant at Manipal & Apollo
- *    Hospitals"; the Why KNEEV page lists Apollo, Manipal, Bangalore Hospital
+ *    Hospitals"; the Why Kneev page lists Apollo, Manipal, Bangalore Hospital
  *    and United Hospital. Set a confirmed list below; null hides it.
  */
 import portrait from '../assets/img/doctor-portrait.webp';
@@ -14,7 +14,7 @@ import portrait from '../assets/img/doctor-portrait.webp';
 export const DOCTOR = {
   name: 'Dr. Amith P. Shetty',
   photo: portrait,
-  photoAlt: 'Dr. Amith P. Shetty, orthopaedic surgeon, seated at his consultation desk at KNEEV',
+  photoAlt: 'Dr. Amith P. Shetty, orthopaedic surgeon, seated at his consultation desk at Kneev',
   qualifications: ['MBBS', 'MS Orthopaedics', 'Dip SICOT (Belgium)', 'FIJR (Germany)'],
   title: 'Orthopaedic Surgeon — Knee, Hip & Spine',
 
@@ -23,7 +23,7 @@ export const DOCTOR = {
 
   bio: [
     'Dr. Amith P. Shetty is a fellowship-trained orthopaedic surgeon whose practice focuses on the knee, hip and spine. His clinical work covers degenerative joint conditions, sports injuries and joint reconstruction, including primary and revision joint replacement.',
-    'At KNEEV, every consultation is personally conducted by him. Time is set aside for a detailed history, a systematic examination and a clear explanation of findings, so that patients understand their condition before any treatment decision is made.',
+    'At Kneev, every consultation is personally conducted by him. Time is set aside for a detailed history, a systematic examination and a clear explanation of findings, so that patients understand their condition before any treatment decision is made.',
   ],
   focus: [
     'Knee arthritis and knee replacement',

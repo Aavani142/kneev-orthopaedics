@@ -9,7 +9,7 @@ export default function Footer() {
 
         <div className="grid gap-10 pt-16 sm:grid-cols-2 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <img src={logo} alt="KNEEV Orthopaedic Center" width="400" height="178" loading="lazy" className="h-12 w-auto brightness-0 invert" />
+            <img src={logo} alt="Kneev Orthopaedic Center" width="400" height="178" loading="lazy" className="h-12 w-auto brightness-0 invert" />
             <p className="mt-4 max-w-xs">Conservative-first orthopaedic care in Jayanagar, Bengaluru.</p>
           </div>
           <div className="lg:col-span-3">
@@ -26,9 +26,9 @@ export default function Footer() {
               <br />
               <a href={`mailto:${SITE.email}`} className="link-line break-all hover:text-white">{SITE.email}</a>
               <br />
-              Mon – Sat: 9:00 AM – 7:00 PM
+              Mon – Sat: 10:00 AM – 7:30 PM
               <br />
-              Sunday: By appointment
+              Sunday: Closed
             </p>
           </div>
           <div className="lg:col-span-2">
@@ -43,7 +43,7 @@ export default function Footer() {
           </div>
         </div>
         <p className="mt-14 border-t border-white/10 pt-6 text-xs leading-relaxed text-white/55">{DISCLAIMER}</p>
-        <p className="mt-2 text-xs text-white/55">© {new Date().getFullYear()} KNEEV Orthopaedic Center. All rights reserved.</p>
+        <p className="mt-2 text-xs text-white/55">© {new Date().getFullYear()} Kneev Orthopaedic Center. All rights reserved.</p>
       </div>
     </footer>
   );

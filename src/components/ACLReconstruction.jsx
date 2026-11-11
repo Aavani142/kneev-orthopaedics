@@ -199,7 +199,7 @@ export default function ACLReconstruction() {
             </Button>
             <Button
               as="a"
-              href={whatsappHref('Hello KNEEV Orthopaedic Center, I would like to enquire about an ACL / knee ligament injury.')}
+              href={whatsappHref('Hello Kneev Orthopaedic Center, I would like to enquire about an ACL / knee ligament injury.')}
               target="_blank"
               rel="noopener"
               variant="outline"

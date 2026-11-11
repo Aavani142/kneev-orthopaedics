@@ -13,7 +13,7 @@ export const FAQ_GROUPS = [
       },
       {
         q: 'Is knee replacement the only treatment for knee arthritis?',
-        a: 'No. Many people with knee arthritis are managed without surgery, through activity modification, targeted physiotherapy and strengthening, weight management, medicines when indicated, bracing or injections when clinically appropriate. At KNEEV, non-surgical options are explored first.',
+        a: 'No. Many people with knee arthritis are managed without surgery, through activity modification, targeted physiotherapy and strengthening, weight management, medicines when indicated, bracing or injections when clinically appropriate. At Kneev, non-surgical options are explored first.',
       },
       {
         q: 'What is the difference between total and partial knee replacement?',

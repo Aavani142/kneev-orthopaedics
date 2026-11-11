@@ -7,7 +7,7 @@ export default function WhyKneev() {
     <section id="why-kneev" aria-labelledby="why-title" data-track-section="why-kneev" className="bg-ivory py-20 sm:py-24 lg:py-28">
       <div className="container-page">
         <Reveal as="p" className="kicker">
-          Why KNEEV
+          Why Kneev
         </Reveal>
         <h2 id="why-title" className="sr-only">
           Orthopaedic Care Guided by Clinical Judgement
@@ -18,14 +18,14 @@ export default function WhyKneev() {
 
         {/* Statement that lights up word by word while scrolling */}
         <ScrollWords
-          text="At KNEEV, surgery is the last resort, not the first option. Every decision follows a clear clinical sequence, explained to you at every step."
+          text="At Kneev, surgery is the last resort, not the first option. Every decision follows a clear clinical sequence, explained to you at every step."
           className="mt-8 max-w-5xl font-serif text-[1.7rem] leading-[1.18] text-forest-deep sm:text-[2.4rem] lg:text-[3rem]"
         />
 
         {/* Clinical sequence */}
         <div className="relative mt-16 lg:mt-20">
           <DrawLine className="absolute top-5 right-0 left-0 hidden h-px text-forest/30 lg:block" />
-          <Stagger as="ol" gap={0.14} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4" aria-label="The KNEEV approach">
+          <Stagger as="ol" gap={0.14} className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4" aria-label="The Kneev approach">
             {FLOW.map((step, i) => (
               <StaggerItem as="li" key={step} className="relative flex items-center gap-4 lg:flex-col lg:items-start">
                 <span

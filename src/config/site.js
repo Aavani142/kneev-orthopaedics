@@ -6,7 +6,7 @@
 const env = import.meta.env;
 
 export const SITE = {
-  name: 'KNEEV Orthopaedic Center',
+  name: 'Kneev Orthopaedic Center',
   phoneDisplay: env.VITE_CLINIC_PHONE_DISPLAY || '+91 636 670 0736',
   phoneE164: env.VITE_CLINIC_PHONE || '+916366700736',
   whatsapp: env.VITE_CLINIC_WHATSAPP || '916366700736', // digits only, with country code
@@ -18,26 +18,25 @@ export const SITE = {
     region: 'Karnataka',
     postalCode: '560011',
   },
-  // From the clinic's "Why KNEEV" page. Re-confirm before launch.
+  // From the clinic's "Why Kneev" page. Re-confirm before launch.
   directionsNote: 'About a 5-minute walk from South End Circle Metro. Limited car parking at the building; two-wheeler parking is usually available.',
   mapsUrl: env.VITE_CLINIC_MAPS_URL || 'https://share.google/GduFqF1jzGn6mgBLs',
   mapEmbed:
     env.VITE_CLINIC_MAP_EMBED ||
-    'https://www.google.com/maps?q=KNEEV+Orthopaedic+Center,+14th+Cross+Rd,+2nd+Block,+Jayanagar,+Bengaluru+560011&output=embed',
+    'https://www.google.com/maps?q=Kneev+Orthopaedic+Center,+14th+Cross+Rd,+2nd+Block,+Jayanagar,+Bengaluru+560011&output=embed',
   hours: [
-    { days: 'Monday – Saturday', time: '9:00 AM – 7:00 PM' },
-    { days: 'Sunday', time: 'By appointment' },
+    { days: 'Monday – Saturday', time: '10:00 AM – 7:30 PM' },
+    { days: 'Sunday', time: 'Closed' },
   ],
   mainSite: 'https://www.kneevorthopaediccenter.com/',
   socials: [
     { label: 'Instagram', href: 'https://www.instagram.com/kneevorthopaediccenter' },
     { label: 'YouTube', href: 'https://www.youtube.com/@KneevOrthopaedicCenter' },
-    { label: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61580938515787' },
+    { label: 'Facebook', href: 'https://www.facebook.com/profile.php?id=61586601528005' },
   ],
   privacyPath: '/privacy-policy.html',
 };
 
-export const LEAD_ENDPOINT = env.VITE_LEAD_ENDPOINT || '/api/lead';
 export const POPUP_DELAY_MS = Number(env.VITE_POPUP_DELAY_MS || 3000);
 
 export const DISCLAIMER =
@@ -46,6 +45,6 @@ export const DISCLAIMER =
 export const telHref = `tel:${SITE.phoneE164}`;
 
 export function whatsappHref(message) {
-  const text = message || 'Hello KNEEV Orthopaedic Center, I would like to enquire about an orthopaedic consultation.';
+  const text = message || 'Hello Kneev Orthopaedic Center, I would like to enquire about an orthopaedic consultation.';
   return `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(text)}`;
 }

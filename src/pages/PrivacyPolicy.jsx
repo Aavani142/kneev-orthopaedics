@@ -7,20 +7,20 @@ const SECTIONS = [
   {
     h: 'Information we collect',
     p: [
-      'When you submit a consultation request we collect your name, mobile number, city, the treatment you are interested in, your preferred contact time, and the date and time you gave consent to be contacted.',
-      'We also record how you reached this page, such as Google Ads click identifiers (GCLID, GBRAID, WBRAID) and campaign (UTM) parameters, along with basic technical details such as your browser type.',
+      'When you submit the consultation form, your name, mobile number and location are placed into a WhatsApp message addressed to the clinic. Nothing is sent until you choose to send that message in WhatsApp, and the form details are not stored by this website.',
+      'This page also measures, through Google Analytics and Google Ads, how visitors reached it (for example Google Ads click identifiers and campaign parameters) and whether the enquiry form was used. These measurements do not include your name or phone number.',
     ],
   },
   {
     h: 'How we use it',
     p: [
-      'We use your details only to contact you by phone call or WhatsApp about your enquiry and to arrange a consultation. Enquiries are stored securely on our server and shared with the clinic team by email or WhatsApp notification. Please do not send medical reports through the website form. Campaign information helps us understand which advertisements are useful, so we can improve them.',
+      'We use the details you send us on WhatsApp only to respond to your enquiry and arrange a consultation. Messages you send on WhatsApp are handled under WhatsApp’s own terms and privacy policy. Campaign information helps us understand which advertisements are useful, so we can improve them.',
     ],
   },
   {
     h: 'Sharing',
     p: [
-      'We do not sell your information. It is processed by service providers that help us run this website and receive enquiries — for example email delivery, WhatsApp Business messaging (Meta) and Google Analytics / Google Ads — only for these purposes.',
+      'We do not sell your information. It is processed by service providers that help us run this website and receive enquiries — for example WhatsApp (Meta) and Google Analytics / Google Ads — only for these purposes.',
     ],
   },
   {
@@ -42,7 +42,7 @@ export default function PrivacyPolicy() {
     <div className="min-h-screen bg-ivory">
       <header className="border-b border-line bg-white">
         <div className="container-page flex h-16 items-center justify-between">
-          <a href="/"><img src={logo} alt="KNEEV Orthopaedic Center" className="h-10 w-auto" /></a>
+          <a href="/"><img src={logo} alt="Kneev Orthopaedic Center" className="h-10 w-auto" /></a>
           <a href="/" className="inline-flex items-center gap-1.5 text-sm font-semibold text-forest">
             <ArrowLeft size={16} aria-hidden="true" /> Back
           </a>

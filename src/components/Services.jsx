@@ -21,7 +21,7 @@ export default function Services() {
       <div className="container-page grid gap-12 lg:grid-cols-12 lg:gap-16">
         <div className="lg:col-span-4">
           <div className="lg:sticky lg:top-28">
-            <SectionIntro id="services-title" kicker="How we can help" title="What brings you to *KNEEV* today?" />
+            <SectionIntro id="services-title" kicker="How we can help" title="What brings you to *Kneev* today?" />
             <Reveal as="p" delay={0.2} className="mt-6 max-w-sm text-muted">
               Choose your concern to learn more, or send an enquiry and our team will guide you to the right assessment.
             </Reveal>
@@ -40,7 +40,7 @@ export default function Services() {
             >
               {/* hover wash */}
               <span aria-hidden="true" className="absolute inset-0 origin-bottom scale-y-0 bg-white transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-y-100" />
-              <div className="relative grid gap-3 py-7 sm:grid-cols-[4rem_1fr_auto] sm:items-center sm:gap-6 sm:px-4 lg:py-8">
+              <div className="relative grid cursor-pointer gap-3 py-7 sm:grid-cols-[4rem_1fr_auto] sm:items-center sm:gap-6 sm:px-4 lg:py-8">
                 <span className="font-serif text-xl text-ember-ink">{String(i + 1).padStart(2, '0')}</span>
                 <div>
                   <h3 className="font-serif text-[1.4rem] leading-tight font-bold transition-transform duration-500 group-hover:translate-x-1.5 sm:text-[1.6rem]">
@@ -48,22 +48,16 @@ export default function Services() {
                   </h3>
                   <p className="mt-1.5 max-w-lg text-[0.97rem] text-muted">{s.text}</p>
                 </div>
-                <div className="flex items-center gap-5 text-sm font-semibold">
-                  {s.href && (
-                    <a href={s.href} className="link-line text-muted hover:text-forest-deep">
-                      Read more
-                    </a>
-                  )}
-                  <button
-                    type="button"
-                    data-cta="consultation"
-                    onClick={() => openLeadModal({ source: `service-${s.treatment}`, treatment: s.treatment })}
-                    aria-label={`Enquire about ${s.title}`}
-                    className="flex h-12 w-12 items-center justify-center rounded-full border border-forest/25 text-forest transition-colors duration-300 group-hover:border-forest group-hover:bg-forest group-hover:text-white"
-                  >
-                    <ArrowUpRight size={19} aria-hidden="true" className="transition-transform duration-300 group-hover:rotate-45" />
-                  </button>
-                </div>
+                {/* The button's ::after stretches over the whole row, so clicking anywhere on the box opens the enquiry popup. */}
+                <button
+                  type="button"
+                  data-cta="consultation"
+                  onClick={() => openLeadModal({ source: `service-${s.treatment}`, treatment: s.treatment })}
+                  aria-label={`Enquire about ${s.title}`}
+                  className="flex h-12 w-12 items-center justify-center rounded-full border border-forest/25 text-forest transition-colors duration-300 after:absolute after:inset-0 after:content-[''] group-hover:border-forest group-hover:bg-forest group-hover:text-white"
+                >
+                  <ArrowUpRight size={19} aria-hidden="true" className="transition-transform duration-300 group-hover:rotate-45" />
+                </button>
               </div>
             </m.li>
           ))}

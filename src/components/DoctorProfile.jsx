@@ -22,7 +22,7 @@ export default function DoctorProfile() {
           />
           <ImageReveal
             src={credentials}
-            alt="Framed qualifications and certificates at KNEEV"
+            alt="Framed qualifications and certificates at Kneev"
             width={1000}
             height={667}
             parallax={0}

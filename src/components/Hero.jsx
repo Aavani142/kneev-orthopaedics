@@ -98,7 +98,7 @@ export default function Hero() {
               sizes="(min-width: 1024px) 38vw, 100vw"
               width={960}
               height={1066}
-              alt="Dr. Amith P. Shetty, orthopaedic surgeon, at the reception of KNEEV Orthopaedic Center in Jayanagar"
+              alt="Dr. Amith P. Shetty, orthopaedic surgeon, at the reception of Kneev Orthopaedic Center in Jayanagar"
               className="aspect-[4/5] w-full sm:aspect-[5/4] lg:aspect-auto lg:h-full"
               imgClassName="object-[50%_22%]"
             />
@@ -118,7 +118,7 @@ export default function Hero() {
               <p className="mt-3 font-serif text-xl leading-tight text-forest-deep">{DOCTOR.name}</p>
               <p className="mt-0.5 text-sm text-muted">{DOCTOR.title}</p>
               <p className="mt-3 flex items-center justify-between border-t border-line pt-3 text-sm">
-                <span>Mon – Sat, 9 AM – 7 PM</span>
+                <span>Mon – Sat, 10 AM – 7:30 PM</span>
                 <a href={telHref} className="link-line font-semibold text-forest">Call</a>
               </p>
             </m.div>

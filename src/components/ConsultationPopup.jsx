@@ -93,15 +93,15 @@ function Dialog({ modal, onClose }) {
           <div className="flex items-center gap-3 pr-12">
             <img src={avatar} alt="" width="44" height="44" className="h-11 w-11 shrink-0 rounded-full object-cover object-[50%_18%]" />
             <p className="text-sm leading-snug text-muted">
-              <span className="block font-heading font-bold text-forest-deep">KNEEV Orthopaedic Center</span>
-              Jayanagar, Bengaluru · Mon–Sat, 9 AM–7 PM
+              <span className="block font-heading font-bold text-forest-deep">Kneev Orthopaedic Center</span>
+              Jayanagar, Bengaluru · Mon–Sat, 10 AM–7:30 PM
             </p>
           </div>
           <h2 id="lead-modal-title" className="mt-5 text-[1.6rem] leading-[1.15] font-bold sm:text-[1.9rem]">
             Book Your Orthopaedic Consultation
           </h2>
           <p id="lead-modal-desc" className="mt-2 text-[0.95rem] text-muted">
-            Tell us a little about your concern. Our team will call you back to help with the next steps.
+            Share your details and send them to our team on WhatsApp. We will help you with the next steps.
           </p>
           <div className="mt-5">
             <LeadForm source={modal.source} defaultTreatment={modal.treatment} />

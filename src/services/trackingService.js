@@ -8,7 +8,8 @@
  * - Nothing configured: events still go to dataLayer (harmless, useful in QA).
  *
  * Events: consultation_popup_open, consultation_cta_click, phone_click,
- * whatsapp_click, generate_lead (ONLY after the server confirms the lead).
+ * whatsapp_click, whatsapp_enquiry_opened (valid form submitted and WhatsApp opened with the
+ * enquiry; the site cannot confirm the visitor then tapped Send).
  */
 import { getAttribution } from './attribution.js';
 
@@ -18,7 +19,7 @@ const GA4_ID = env.VITE_GA4_ID;
 const ADS_ID = env.VITE_GOOGLE_ADS_ID;
 const ENHANCED = env.VITE_GOOGLE_ADS_ENHANCED_CONVERSIONS === 'true';
 const CONVERSION_LABELS = {
-  generate_lead: env.VITE_GOOGLE_ADS_LEAD_LABEL,
+  whatsapp_enquiry_opened: env.VITE_GOOGLE_ADS_LEAD_LABEL,
   phone_click: env.VITE_GOOGLE_ADS_CALL_LABEL,
   whatsapp_click: env.VITE_GOOGLE_ADS_WHATSAPP_LABEL,
 };
@@ -73,14 +74,15 @@ export function trackPopupOpen(trigger) {
   track('consultation_popup_open', { trigger });
 }
 
-/** Call only after the backend has confirmed the lead. */
-export function trackLead({ leadId, treatment, source, mobile }) {
-  if (ENHANCED && mobile && !GTM_ID && (GA4_ID || ADS_ID)) gtag('set', 'user_data', { phone_number: `+91${mobile}` });
+/**
+ * Valid enquiry form submitted and WhatsApp opened with the pre-filled message.
+ * This is intent, not a confirmed delivery: WhatsApp gives the website no "sent" signal.
+ */
+export function trackWhatsAppEnquiry({ source, treatment }) {
   const { gclid, gbraid, wbraid, utm_source, utm_medium, utm_campaign, utm_term, utm_content } = getAttribution();
-  track('generate_lead', {
-    lead_id: leadId,
-    treatment,
+  track('whatsapp_enquiry_opened', {
     form_location: source,
+    treatment,
     gclid,
     gbraid,
     wbraid,

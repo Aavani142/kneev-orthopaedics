@@ -29,7 +29,7 @@ export default function ClinicGallery() {
     <section ref={ref} id="clinic" aria-labelledby="clinic-title" data-track-section="gallery" className="overflow-hidden bg-white py-20 sm:py-24 lg:pt-28 lg:pb-20">
       <div className="container-page">
         <div className="grid items-end gap-6 lg:grid-cols-12">
-          <SectionIntro id="clinic-title" className="lg:col-span-8" kicker="Inside KNEEV" title="A clinic built for *orthopaedic care*" />
+          <SectionIntro id="clinic-title" className="lg:col-span-8" kicker="Inside Kneev" title="A clinic built for *orthopaedic care*" />
           <Reveal as="p" delay={0.15} className="max-w-sm text-muted lg:col-span-4">
             Photographs of our centre on 14th Cross Road, 2nd Block, Jayanagar.
           </Reveal>

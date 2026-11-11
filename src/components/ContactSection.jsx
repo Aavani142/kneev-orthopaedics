@@ -18,7 +18,7 @@ function LazyMap() {
     <div ref={ref} className="relative h-full bg-stone grayscale-[35%]">
       {show ? (
         <iframe
-          title="Map showing KNEEV Orthopaedic Center, 2nd Block, Jayanagar, Bengaluru"
+          title="Map showing Kneev Orthopaedic Center, 2nd Block, Jayanagar, Bengaluru"
           src={SITE.mapEmbed}
           className="absolute inset-0 h-full w-full border-0"
           loading="lazy"
@@ -43,7 +43,7 @@ export default function ContactSection() {
       <section id="contact" aria-labelledby="contact-title" data-track-section="contact" className="bg-ivory py-20 sm:py-24 lg:py-28">
         <div className="container-page grid gap-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-4">
-            <SectionIntro id="contact-title" kicker="Location & Contact" title="Visit KNEEV *in Jayanagar*" />
+            <SectionIntro id="contact-title" kicker="Location & Contact" title="Visit Kneev *in Jayanagar*" />
             <div className="mt-8 flex flex-col gap-3">
               <Button as="a" href={telHref}>
                 <Phone size={17} aria-hidden="true" /> Call the Clinic

@@ -16,7 +16,7 @@ export default function PatientJourney() {
     <section id="journey" aria-labelledby="journey-title" data-track-section="journey" className="on-dark bg-forest-deep py-20 text-white sm:py-24 lg:py-32">
       <div className="container-page">
         <div className="grid items-end gap-8 lg:grid-cols-12">
-          <SectionIntro id="journey-title" light className="lg:col-span-8" kicker="Your journey" title="What happens after *you contact KNEEV*" />
+          <SectionIntro id="journey-title" light className="lg:col-span-8" kicker="Your journey" title="What happens after *you contact Kneev*" />
           <Reveal delay={0.2} className="lg:col-span-4 lg:text-right">
             <Button data-cta="consultation" variant="accent" arrow onClick={() => openLeadModal({ source: 'journey' })}>
               Start with an enquiry

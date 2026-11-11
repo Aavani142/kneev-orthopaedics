@@ -13,7 +13,7 @@ import FloatingContact from '../components/FloatingContact.jsx';
 /*
  * Page order:
  *   1 Hero (+ marquee) - 2 How we can help - 3 "Not sure?" prompt - 4 Enquiry form
- *   5 Why KNEEV - 6 Inside KNEEV - 7 Location & contact - 8 Google Map - 9 Footer
+ *   5 Why Kneev - 6 Inside Kneev - 7 Location & contact - 8 Google Map - 9 Footer
  * The enquiry form (#book) and the popup share one <LeadForm> and submission handler.
  *
  * Not rendered (components kept in src/components for possible reuse):

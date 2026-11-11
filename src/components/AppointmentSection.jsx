@@ -6,7 +6,7 @@ import { Reveal, SplitHeading, Stagger, StaggerItem } from './motion.jsx';
 import { Button, WhatsAppIcon } from './ui.jsx';
 
 const NEXT = [
-  'Our team calls you back during clinic hours.',
+  'Send us your details on WhatsApp in one tap.',
   'We arrange a consultation slot that suits you.',
   'Your knee is assessed and your options explained clearly.',
 ];
@@ -54,10 +54,10 @@ export default function AppointmentSection() {
 
         <Reveal delay={0.15} className="lg:col-span-6 lg:pl-6">
           <div className="bg-white p-6 text-charcoal shadow-[0_40px_80px_-40px_rgb(0_0_0/0.7)] sm:p-10 lg:sticky lg:top-28">
-            <h3 className="font-serif text-[1.6rem] leading-tight font-bold">Request a callback</h3>
-            <p className="mt-2 text-[0.95rem] text-muted">Share a few details and the KNEEV team will contact you.</p>
+            <h3 className="font-serif text-[1.6rem] leading-tight font-bold">Send an enquiry</h3>
+            <p className="mt-2 text-[0.95rem] text-muted">Share a few details and send them to the Kneev team on WhatsApp.</p>
             <div className="mt-8">
-              <LeadForm source="appointment-section" onEngaged={markEngaged} submitLabel="Submit Enquiry" />
+              <LeadForm source="appointment-section" onEngaged={markEngaged} />
             </div>
           </div>
         </Reveal>
