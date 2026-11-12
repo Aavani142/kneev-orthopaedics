@@ -36,6 +36,7 @@ const NON_SURGICAL = [
 const TYPES = [
   ['Total Knee Replacement', 'The worn joint surfaces of the knee are resurfaced with implant components. Generally considered when arthritis affects most of the joint.'],
   ['Partial Knee Replacement', 'Only the damaged compartment of the knee is resurfaced, preserving healthy bone, cartilage and ligaments. Suitable only for selected patients whose arthritis is limited to one area of the knee.'],
+  ['Robotic Knee Replacement', 'A knee replacement in which a robotic-assisted system, guided by a plan made for your knee, helps the surgeon position the implant with precision. The surgeon remains in control throughout, and suitability is decided after a detailed assessment.'],
   ['Revision Knee Replacement', 'A previous knee replacement is partly or fully replaced — for example because of wear, loosening, instability, infection or persistent symptoms. These procedures are more complex and need detailed planning.'],
 ];
 
