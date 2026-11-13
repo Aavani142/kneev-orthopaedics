@@ -6,8 +6,7 @@ import { SectionIntro } from './ui.jsx';
 
 // Services listed on kneevorthopaediccenter.com, ordered for this campaign.
 const SERVICES = [
-  { title: 'Knee Replacement', text: 'Total, partial and revision knee replacement when arthritis limits daily life.', treatment: 'knee-replacement' },
-  { title: 'Robotic Knee Replacement', text: 'Robotic-assisted knee replacement for precise implant positioning, with the surgeon in control throughout.', treatment: 'knee-replacement' },
+  { title: 'Knee Replacement', text: 'Total, partial, robotic and revision knee replacement when arthritis limits daily life.', treatment: 'knee-replacement' },
   { title: 'ACL Injury & Reconstruction', text: 'Assessment of ligament injuries, with reconstruction when clinically appropriate.', treatment: 'acl-reconstruction' },
   { title: 'Knee Pain Consultation', text: 'A thorough evaluation to find the cause of your knee pain and the right next step.', treatment: 'knee-pain' },
   { title: 'Sports Knee Injuries', text: 'Meniscus and ligament injuries, with rehabilitation tailored to your sport and goals.', treatment: 'acl-reconstruction' },
