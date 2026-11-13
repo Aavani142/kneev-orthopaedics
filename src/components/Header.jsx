@@ -55,7 +55,7 @@ export default function Header() {
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: hidden && !menuOpen ? '-100%' : '0%', opacity: 1 }}
         transition={{ duration: 0.5, ease: EASE }}
-        className={`fixed inset-x-0 top-0 z-40 transition-[background-color,border-color] duration-500 ${
+        className={`fixed inset-x-0 top-0 z-[48] transition-[background-color,border-color] duration-500 ${
           light ? 'border-b border-forest/10 bg-transparent' : menuOpen ? 'border-b border-white/10 bg-forest-night' : 'border-b border-line bg-ivory/90 backdrop-blur-md'
         }`}
       >
@@ -127,9 +127,11 @@ export default function Header() {
             animate={{ clipPath: 'inset(0% 0% 0% 0%)' }}
             exit={{ clipPath: 'inset(0% 0% 100% 0%)' }}
             transition={{ duration: 0.6, ease: EASE }}
-            className="on-dark fixed inset-0 z-30 flex flex-col bg-forest-night px-5 pt-24 pb-10 text-white sm:px-8 lg:hidden"
+            className="on-dark fixed inset-0 z-[45] flex flex-col overflow-y-auto bg-forest-night px-5 pt-24 pb-[calc(6rem+env(safe-area-inset-bottom))] text-white sm:px-8 md:pb-10 lg:hidden"
           >
-            <ul className="flex-1">
+            {/* Links and actions sit together near the top, so the whole menu is visible at once
+                and nothing ends up behind the phone's bottom action bar or floating buttons. */}
+            <ul>
               {LINKS.map((l, i) => (
                 <m.li
                   key={l.href}
@@ -145,7 +147,7 @@ export default function Header() {
                 </m.li>
               ))}
             </ul>
-            <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="space-y-3">
+            <m.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="mt-8 space-y-3">
               <Button
                 data-cta="consultation"
                 variant="accent"
