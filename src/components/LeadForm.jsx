@@ -1,9 +1,8 @@
 import { useEffect, useId, useRef } from 'react';
-import { AlertCircle, ArrowLeft, Lock, Phone } from 'lucide-react';
+import { AlertCircle, CircleCheck, LoaderCircle, Lock, Phone, Send } from 'lucide-react';
 import { normalizeMobile } from '../../shared/lead-schema.js';
 import { SITE, telHref, whatsappHref } from '../config/site.js';
 import { useLeadForm } from '../hooks/useLeadForm.js';
-import { enquiryWhatsAppHref } from '../services/leadService.js';
 import { Button, WhatsAppIcon } from './ui.jsx';
 
 function FieldError({ id, message }) {
@@ -18,64 +17,45 @@ function FieldError({ id, message }) {
 
 const labelCls = 'mb-1.5 block text-sm font-medium text-charcoal';
 
-export default function LeadForm({ source, defaultTreatment = '', onEngaged, submitLabel = 'Send Enquiry on WhatsApp' }) {
+export default function LeadForm({ source, defaultTreatment = '', onEngaged, submitLabel = 'Send Enquiry' }) {
   const uid = useId();
   const id = (name) => `${uid}-${name}`;
   const formRef = useRef(null);
   const resultRef = useRef(null);
-  const { values, setField, touch, errorFor, status, submit, edit } = useLeadForm({ source, defaultTreatment });
+  const errorRef = useRef(null);
+  const { values, setField, touch, errorFor, status, submit } = useLeadForm({ source, defaultTreatment });
+  const submitting = status === 'submitting';
 
   useEffect(() => {
-    if (status === 'opened' || status === 'blocked') resultRef.current?.focus();
+    if (status === 'success') resultRef.current?.focus();
+    if (status === 'error') errorRef.current?.focus();
   }, [status]);
 
   function onSubmit(e) {
     e.preventDefault();
-    const firstInvalid = submit(); // synchronous so the browser allows WhatsApp to open
+    const firstInvalid = submit();
     if (firstInvalid) formRef.current?.querySelector(`[data-field="${firstInvalid}"]`)?.focus();
   }
 
   const describe = (name) => (errorFor(name) ? id(`${name}-err`) : undefined);
-  const waHref = enquiryWhatsAppHref(values);
 
-  if (status === 'opened' || status === 'blocked') {
-    const blocked = status === 'blocked';
+  if (status === 'success') {
+    const firstName = values.name.trim().split(/\s+/)[0];
     return (
       <div className="animate-fade-in py-1" role="status" aria-live="polite">
-        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white">
-          <WhatsAppIcon size={26} />
+        <span className="flex h-12 w-12 items-center justify-center rounded-full bg-forest text-white">
+          <CircleCheck size={26} aria-hidden="true" />
         </span>
         <h3 ref={resultRef} tabIndex={-1} className="mt-4 text-2xl font-bold outline-none">
-          {blocked ? 'Open WhatsApp to send your enquiry' : 'One last step: tap Send in WhatsApp'}
+          Thank you, {firstName}. Your enquiry has been sent.
         </h3>
         <p className="mt-2 text-muted">
-          {blocked
-            ? 'Your browser did not open WhatsApp automatically. Tap the button below. Your details are already filled in.'
-            : 'We have opened WhatsApp with your enquiry ready to go. Your enquiry is only sent to the clinic once you tap Send in WhatsApp.'}
+          Our team will contact you on <strong className="text-charcoal">+91 {normalizeMobile(values.mobile)}</strong> during
+          clinic hours (Mon – Sat, 10 AM – 7:30 PM) to guide you to the right assessment.
         </p>
-        <ol className="mt-4 space-y-1.5 rounded-md bg-sage px-4 py-3 text-sm text-forest-deep">
-          <li>1. {blocked ? 'Tap "Open WhatsApp" below.' : 'Switch to the WhatsApp window or app.'}</li>
-          <li>2. Check the pre-filled message.</li>
-          <li>3. Tap <strong>Send</strong>.</li>
-        </ol>
-
-        <div className="mt-5 grid gap-2.5">
-          <Button as="a" href={waHref} target="_blank" rel="noopener" variant="whatsapp" size="lg" className="w-full">
-            <WhatsAppIcon size={19} /> {blocked ? 'Open WhatsApp' : 'Open WhatsApp again'}
-          </Button>
-          <div className="grid grid-cols-2 gap-2.5">
-            <Button as="a" href={telHref} variant="outline">
-              <Phone size={16} aria-hidden="true" /> Call
-            </Button>
-            <Button variant="outline" onClick={edit}>
-              <ArrowLeft size={16} aria-hidden="true" /> Edit details
-            </Button>
-          </div>
-        </div>
-        <p className="mt-4 text-xs text-muted">
-          WhatsApp not installed? Call us on{' '}
-          <a href={telHref} className="font-semibold text-forest underline underline-offset-2">{SITE.phoneDisplay}</a>{' '}
-          (Mon – Sat, 10 AM – 7:30 PM). Your mobile: +91 {normalizeMobile(values.mobile)}.
+        <p className="mt-4 text-sm text-muted">
+          Need to speak to us sooner? Call{' '}
+          <a href={telHref} className="font-semibold text-forest underline underline-offset-2">{SITE.phoneDisplay}</a>.
         </p>
       </div>
     );
@@ -126,8 +106,26 @@ export default function LeadForm({ source, defaultTreatment = '', onEngaged, sub
         <label>Company<input tabIndex={-1} autoComplete="off" name="company" value={values.company} onChange={(e) => setField('company', e.target.value)} /></label>
       </div>
 
-      <Button type="submit" variant="whatsapp" size="lg" className="w-full">
-        <WhatsAppIcon size={19} /> {submitLabel}
+      {status === 'error' && (
+        <div ref={errorRef} tabIndex={-1} role="alert" className="flex items-start gap-2 rounded-md border border-[#b42318]/30 bg-[#fef3f2] px-3.5 py-3 text-sm text-[#b42318] outline-none">
+          <AlertCircle size={16} className="mt-0.5 shrink-0" aria-hidden="true" />
+          <span>
+            Sorry, we couldn't send your enquiry just now. Please try again, or call us on{' '}
+            <a href={telHref} className="font-semibold underline underline-offset-2">{SITE.phoneDisplay}</a>.
+          </span>
+        </div>
+      )}
+
+      <Button type="submit" variant="primary" size="lg" className="w-full" disabled={submitting} aria-busy={submitting}>
+        {submitting ? (
+          <>
+            <LoaderCircle size={19} className="animate-spin" aria-hidden="true" /> Sending…
+          </>
+        ) : (
+          <>
+            <Send size={18} aria-hidden="true" /> {submitLabel}
+          </>
+        )}
       </Button>
       <div className="grid grid-cols-2 gap-2">
         <Button as="a" href={telHref} variant="outline" size="sm">
@@ -140,7 +138,7 @@ export default function LeadForm({ source, defaultTreatment = '', onEngaged, sub
       <p className="flex items-start justify-center gap-1.5 text-center text-xs text-muted">
         <Lock size={12} className="mt-0.5 shrink-0" aria-hidden="true" />
         <span>
-          Submitting opens WhatsApp with your details. Your enquiry is sent when you tap Send.{' '}
+          Your details are sent securely to Kneev Orthopaedic Center by email.{' '}
           <a href={SITE.privacyPath} target="_blank" rel="noopener" className="underline underline-offset-2">Privacy Policy</a>
         </span>
       </p>

@@ -101,7 +101,7 @@ function Dialog({ modal, onClose }) {
             Book Your Orthopaedic Consultation
           </h2>
           <p id="lead-modal-desc" className="mt-2 text-[0.95rem] text-muted">
-            Share your details and send them to our team on WhatsApp. We will help you with the next steps.
+            Share your details and our team will call you back to help you with the next steps.
           </p>
           <div className="mt-5">
             <LeadForm source={modal.source} defaultTreatment={modal.treatment} />

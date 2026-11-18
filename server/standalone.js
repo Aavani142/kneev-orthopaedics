@@ -1,12 +1,14 @@
 /**
  * Minimal production server for VPS / container hosting (no dependencies).
  *   npm run build && npm start
- * Serves the built static site from dist/. (Enquiries go through WhatsApp; there is no API.)
+ * Serves the built static site from dist/ and the enquiry endpoint POST /api/lead (api/lead.js).
+ * Set RESEND_API_KEY (and optionally LEAD_EMAIL_TO / LEAD_EMAIL_FROM) in the environment.
  */
 import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import leadHandler from '../api/lead.js';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const dist = path.join(root, 'dist');
@@ -25,6 +27,7 @@ const TYPES = {
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, 'http://localhost');
+  if (url.pathname === '/api/lead') return leadHandler(req, res);
 
   let file = path.normalize(path.join(dist, decodeURIComponent(url.pathname)));
   if (!file.startsWith(dist)) {

@@ -1,33 +1,55 @@
 /**
- * Google Tag Manager / GA4 / Google Ads hooks.
+ * Google Ads / GA4 / GTM hooks.
  *
- * - VITE_GTM_ID set: only GTM loads; every event is pushed to window.dataLayer.
- *   Configure GA4 + Ads tags inside GTM (prevents double counting).
- * - Otherwise gtag.js loads for VITE_GA4_ID and/or VITE_GOOGLE_ADS_ID and events
- *   plus Ads conversions are sent directly.
- * - Nothing configured: events still go to dataLayer (harmless, useful in QA).
+ * The Google tag for Google Ads (AW-18111261649) is installed with Google's official
+ * snippet in the <head> of index.html and privacy-policy.html. This file does not load
+ * gtag.js a second time; it only sends events and conversions through that tag.
  *
- * Events: consultation_popup_open, consultation_cta_click, phone_click,
- * whatsapp_click, whatsapp_enquiry_opened (valid form submitted and WhatsApp opened with the
- * enquiry; the site cannot confirm the visitor then tapped Send).
+ * - VITE_GTM_ID set: GTM also loads and events are pushed to window.dataLayer for GTM
+ *   to use. Direct Ads conversions are then switched off here, so build the conversion
+ *   tags inside GTM instead (otherwise every conversion would be counted twice).
+ * - VITE_GA4_ID set: GA4 is configured on the same Google tag.
+ *
+ * Events: consultation_popup_open, consultation_cta_click, phone_click, whatsapp_click,
+ * generate_lead (enquiry form emailed to the clinic — the "Submit Lead Form" conversion).
  */
-import { getAttribution } from './attribution.js';
 
 const env = import.meta.env;
 const GTM_ID = env.VITE_GTM_ID;
 const GA4_ID = env.VITE_GA4_ID;
-const ADS_ID = env.VITE_GOOGLE_ADS_ID;
+/** Must match the ID in the <head> snippet of index.html and privacy-policy.html. */
+const ADS_ID = env.VITE_GOOGLE_ADS_ID || 'AW-18111261649';
 const ENHANCED = env.VITE_GOOGLE_ADS_ENHANCED_CONVERSIONS === 'true';
+
+/**
+ * Google Ads conversion labels: the part after the slash in a conversion's
+ * send_to value, e.g. send_to: 'AW-18111261649/AbC-D_efG-h12_34-567' → 'AbC-D_efG-h12_34-567'.
+ * Paste each label from Google Ads (Goals → Conversions → the action → Tag setup →
+ * "Install the tag yourself" → Event snippet), or set the VITE_* variable instead.
+ * While a label is empty or still the placeholder, that conversion is not sent
+ * (its event still reaches the Google tag).
+ */
+const PLACEHOLDER_LABEL = 'ADD_LABEL_HERE';
+
+/** "Submit Lead Form" conversion: enquiry form emailed to the clinic. */
+export const GOOGLE_ADS_CONVERSION_ID = ADS_ID;
+export const GOOGLE_ADS_CONVERSION_LABEL = env.VITE_GOOGLE_ADS_LEAD_LABEL || PLACEHOLDER_LABEL; // TODO: paste the label
+
 const CONVERSION_LABELS = {
-  whatsapp_enquiry_opened: env.VITE_GOOGLE_ADS_LEAD_LABEL,
-  phone_click: env.VITE_GOOGLE_ADS_CALL_LABEL,
-  whatsapp_click: env.VITE_GOOGLE_ADS_WHATSAPP_LABEL,
+  generate_lead: GOOGLE_ADS_CONVERSION_LABEL,
+  phone_click: env.VITE_GOOGLE_ADS_CALL_LABEL || '', // TODO: "Phone call click" label
+  whatsapp_click: env.VITE_GOOGLE_ADS_WHATSAPP_LABEL || '', // TODO: "WhatsApp click" label
 };
+
+const isRealLabel = (label) => !!label && label !== PLACEHOLDER_LABEL && /^[\w-]+$/.test(label);
 
 window.dataLayer = window.dataLayer || [];
 function gtag() {
+  // Same as Google's snippet; uses window.gtag from the <head> when it is there.
   // eslint-disable-next-line prefer-rest-params
-  window.dataLayer.push(arguments);
+  if (typeof window.gtag === 'function') window.gtag.apply(window, arguments);
+  // eslint-disable-next-line prefer-rest-params
+  else window.dataLayer.push(arguments);
 }
 
 function loadScript(src) {
@@ -46,55 +68,55 @@ export function initTracking() {
   if (GTM_ID) {
     window.dataLayer.push({ 'gtm.start': Date.now(), event: 'gtm.js' });
     loadScript(`https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(GTM_ID)}`);
-  } else if (GA4_ID || ADS_ID) {
-    window.gtag = gtag;
-    loadScript(`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA4_ID || ADS_ID)}`);
-    gtag('js', new Date());
-    if (GA4_ID) gtag('config', GA4_ID);
-    if (ADS_ID) gtag('config', ADS_ID, ENHANCED ? { allow_enhanced_conversions: true } : {});
   }
+
+  const headTag = typeof window.gtag === 'function'; // Google's snippet in <head> already ran
+  if (!headTag) {
+    // Fallback for a page without the <head> snippet: load the same tag once.
+    window.gtag = gtag;
+    loadScript(`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(ADS_ID)}`);
+    gtag('js', new Date());
+    gtag('config', ADS_ID);
+  }
+  if (ENHANCED) gtag('set', 'allow_enhanced_conversions', true);
+  if (GA4_ID) gtag('config', GA4_ID);
 
   document.addEventListener('click', onDocumentClick, { capture: true });
 }
 
 export function track(event, params = {}) {
   window.dataLayer.push({ event, ...params });
-  if (GTM_ID || !(GA4_ID || ADS_ID)) return;
   gtag('event', event, params);
   const label = CONVERSION_LABELS[event];
-  if (ADS_ID && label) {
-    gtag('event', 'conversion', {
-      send_to: `${ADS_ID}/${label}`,
-      ...(params.lead_id ? { transaction_id: params.lead_id } : {}),
-    });
-  }
+  if (GTM_ID || !isRealLabel(label)) return; // with GTM, conversions are GTM's job
+  // No value/currency: a patient enquiry has no real monetary value to report.
+  gtag('event', 'conversion', {
+    send_to: `${GOOGLE_ADS_CONVERSION_ID}/${label}`,
+    ...(params.transaction_id ? { transaction_id: params.transaction_id } : {}),
+  });
 }
 
 export function trackPopupOpen(trigger) {
   track('consultation_popup_open', { trigger });
 }
 
+const trackedLeads = new Set();
+
 /**
- * Valid enquiry form submitted and WhatsApp opened with the pre-filled message.
- * This is intent, not a confirmed delivery: WhatsApp gives the website no "sent" signal.
+ * "Submit Lead Form": call ONLY after /api/lead confirmed the email provider accepted the enquiry.
+ * Sent once per submission id (re-renders or repeat calls are ignored); Google Ads also
+ * de-duplicates on transaction_id.
  */
-export function trackWhatsAppEnquiry({ source, treatment }) {
-  const { gclid, gbraid, wbraid, utm_source, utm_medium, utm_campaign, utm_term, utm_content } = getAttribution();
-  track('whatsapp_enquiry_opened', {
-    form_location: source,
-    treatment,
-    gclid,
-    gbraid,
-    wbraid,
-    utm_source,
-    utm_medium,
-    utm_campaign,
-    utm_term,
-    utm_content,
-  });
+export function trackLeadSubmitted({ source, treatment, transactionId }) {
+  if (!transactionId || trackedLeads.has(transactionId)) return;
+  trackedLeads.add(transactionId);
+  track('generate_lead', { transaction_id: transactionId, form_location: source, treatment: treatment || 'not specified' });
 }
 
-/** tel:, WhatsApp and consultation buttons anywhere on the page are tracked automatically. */
+/**
+ * tel:, WhatsApp and consultation buttons anywhere on the page are tracked automatically.
+ * Runs in the capture phase, before the browser follows the link.
+ */
 function onDocumentClick(e) {
   const el = e.target.closest?.('a, button');
   if (!el) return;

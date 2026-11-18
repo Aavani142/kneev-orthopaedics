@@ -1,57 +1,61 @@
-import { whatsappHref } from '../config/site.js';
 import { normalizeMobile } from '../../shared/lead-schema.js';
+import { getAttribution } from './attribution.js';
 
 /*
- * Enquiries are sent through WhatsApp click-to-chat (wa.me): the form builds a
- * pre-filled message to the clinic's WhatsApp number (the same number used by
- * every WhatsApp button on the site) and the visitor taps Send in WhatsApp.
+ * Enquiries are emailed to the clinic by the serverless function at /api/lead (api/lead.js),
+ * which sends them through Resend. The API key lives only on the server.
  *
- * The website cannot see whether the message was actually sent, so nothing
- * here claims delivery. Browser storage holds only a session flag, never
- * names, phone numbers or medical details.
+ * Browser storage holds only a session flag, never names, phone numbers or medical details.
  */
 
-/** Set for the current browser session once WhatsApp has been opened with an enquiry (pauses the auto popup). */
+/** Set for the current browser session after an enquiry is delivered (pauses the auto popup). */
 export const ENQUIRY_SENT_SESSION_KEY = 'kneev_enquiry_sent';
 
-/** The exact enquiry text sent to the clinic. */
-export function buildEnquiryMessage(values) {
-  const mobile = normalizeMobile(values.mobile);
-  return [
-    'New Consultation Enquiry – Kneev',
-    '',
-    `Name: ${values.name.trim()}`,
-    `Mobile: +91 ${mobile}`,
-    `Location: ${values.city.trim()}`,
-    '',
-    'Source: Kneev Website',
-    '',
-    'I would like to enquire about an orthopaedic consultation.',
-  ].join('\n');
-}
+const ENDPOINT = '/api/lead';
 
-/** wa.me click-to-chat link with the URL-encoded enquiry. */
-export function enquiryWhatsAppHref(values) {
-  return whatsappHref(buildEnquiryMessage(values));
+/** A random id for one enquiry. Retries reuse it so the clinic gets one email and Ads counts one lead. */
+export function newSubmissionId() {
+  return window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(36).slice(2, 12)}`;
 }
 
 /**
- * Opens WhatsApp in a new tab/window (on phones this hands over to the WhatsApp app).
- * Must be called directly inside the click/submit handler so browsers allow it.
- * Returns false when the browser blocked the new window.
+ * Sends the enquiry. Resolves only when the server confirms the email provider accepted it;
+ * throws an Error (with .code) otherwise.
  */
-export function openWhatsApp(url) {
-  const win = window.open(url, '_blank');
-  if (!win) return false;
+export async function submitLead(values, { source, submissionId }) {
+  const { gclid, gbraid, wbraid, utm_source, utm_medium, utm_campaign, utm_term, utm_content, utm_id, landing_page } =
+    getAttribution();
+
+  let res;
   try {
-    win.opener = null; // the opened page cannot control this one
+    res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        submissionId,
+        source,
+        name: values.name.trim(),
+        mobile: normalizeMobile(values.mobile),
+        city: values.city.trim(),
+        treatment: values.treatment || '',
+        company: values.company || '', // honeypot
+        attribution: { gclid, gbraid, wbraid, utm_source, utm_medium, utm_campaign, utm_term, utm_content, utm_id, landing_page },
+      }),
+      signal: AbortSignal.timeout?.(20000),
+    });
   } catch {
-    /* cross-origin: ignore */
+    throw Object.assign(new Error('Network error'), { code: 'network' });
   }
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || data.ok !== true || !data.id) {
+    throw Object.assign(new Error(data.error || `HTTP ${res.status}`), { code: data.error || 'server', fields: data.fields });
+  }
+
   try {
     sessionStorage.setItem(ENQUIRY_SENT_SESSION_KEY, '1');
   } catch {
     /* storage unavailable */
   }
-  return true;
+  return data;
 }

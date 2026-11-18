@@ -1,15 +1,15 @@
 import { useCallback, useRef, useState } from 'react';
 import { validateLead } from '../../shared/lead-schema.js';
-import { enquiryWhatsAppHref, openWhatsApp } from '../services/leadService.js';
-import { trackWhatsAppEnquiry } from '../services/trackingService.js';
+import { newSubmissionId, submitLead } from '../services/leadService.js';
+import { trackLeadSubmitted } from '../services/trackingService.js';
 
 // `treatment` is hidden context (from the service a visitor clicked); `city` is labelled "Location".
 const EMPTY = { name: '', mobile: '', city: '', treatment: '', company: '' };
 export const FIELD_ORDER = ['name', 'mobile', 'city'];
 
 /**
- * Form state, validation and WhatsApp hand-off for the consultation form.
- * status: idle | opened (WhatsApp opened, visitor must tap Send) | blocked (browser blocked the new window)
+ * Form state, validation and email submission for the consultation form.
+ * status: idle | submitting | success | error
  * Entered values are kept in every state so the visitor never has to retype.
  */
 export function useLeadForm({ source, defaultTreatment = '' }) {
@@ -19,11 +19,15 @@ export function useLeadForm({ source, defaultTreatment = '' }) {
   const [status, setStatus] = useState('idle');
   const valuesRef = useRef(values);
   const touchedRef = useRef(touched);
+  const busyRef = useRef(false); // blocks double clicks before React re-renders
+  // Kept across failed attempts, so a retry of an enquiry that actually went through is not emailed twice.
+  const submissionIdRef = useRef(null);
 
   const setField = useCallback((name, value) => {
     const next = { ...valuesRef.current, [name]: value };
     valuesRef.current = next;
     setValues(next);
+    submissionIdRef.current = null; // changed details are a new enquiry
     if (touchedRef.current[name]) setErrors(validateLead(next));
   }, []);
 
@@ -35,11 +39,9 @@ export function useLeadForm({ source, defaultTreatment = '' }) {
 
   const errorFor = (name) => (touched[name] ? errors[name] : undefined);
 
-  /**
-   * Synchronous on purpose: WhatsApp must open inside the same click, or browsers block it.
-   * Returns the first invalid field name (for focusing), otherwise null.
-   */
+  /** Returns the first invalid field name (for focusing), otherwise null. Sending happens in the background. */
   const submit = useCallback(() => {
+    if (busyRef.current) return null;
     const current = valuesRef.current;
     const errs = validateLead(current);
     setErrors(errs);
@@ -49,14 +51,29 @@ export function useLeadForm({ source, defaultTreatment = '' }) {
     if (firstInvalid) return firstInvalid;
     if (current.company) return null; // honeypot filled: silently ignore bots
 
-    const opened = openWhatsApp(enquiryWhatsAppHref(current));
-    setStatus(opened ? 'opened' : 'blocked');
-    if (opened) trackWhatsAppEnquiry({ source, treatment: current.treatment });
+    busyRef.current = true;
+    setStatus('submitting');
+    const submissionId = submissionIdRef.current || (submissionIdRef.current = newSubmissionId());
+
+    submitLead(current, { source, submissionId })
+      .then(() => {
+        setStatus('success');
+        // Only here: the server confirmed the email provider accepted the enquiry.
+        trackLeadSubmitted({ source, treatment: current.treatment, transactionId: submissionId });
+      })
+      .catch((err) => {
+        if (err.fields) {
+          setErrors(err.fields);
+          setStatus('idle');
+        } else {
+          setStatus('error');
+        }
+      })
+      .finally(() => {
+        busyRef.current = false;
+      });
     return null;
   }, [source]);
 
-  /** Back to the form with all entered details intact. */
-  const edit = useCallback(() => setStatus('idle'), []);
-
-  return { values, setField, touch, errorFor, status, submit, edit };
+  return { values, setField, touch, errorFor, status, submit };
 }
