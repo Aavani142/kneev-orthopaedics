@@ -37,8 +37,10 @@ export const GOOGLE_ADS_CONVERSION_LABEL = env.VITE_GOOGLE_ADS_LEAD_LABEL || PLA
 
 const CONVERSION_LABELS = {
   generate_lead: GOOGLE_ADS_CONVERSION_LABEL,
-  phone_click: env.VITE_GOOGLE_ADS_CALL_LABEL || '', // TODO: "Phone call click" label
-  whatsapp_click: env.VITE_GOOGLE_ADS_WHATSAPP_LABEL || '', // TODO: "WhatsApp click" label
+  // "Phone call click": send_to AW-18111261649/jiy_CJDz77odENHXj7xD
+  phone_click: env.VITE_GOOGLE_ADS_CALL_LABEL || 'jiy_CJDz77odENHXj7xD',
+  // "WhatsApp Button Click": send_to AW-18111261649/RuF8CIKx8bodENHXj7xD
+  whatsapp_click: env.VITE_GOOGLE_ADS_WHATSAPP_LABEL || 'RuF8CIKx8bodENHXj7xD',
 };
 
 const isRealLabel = (label) => !!label && label !== PLACEHOLDER_LABEL && /^[\w-]+$/.test(label);
@@ -93,6 +95,8 @@ export function track(event, params = {}) {
   gtag('event', 'conversion', {
     send_to: `${GOOGLE_ADS_CONVERSION_ID}/${label}`,
     ...(params.transaction_id ? { transaction_id: params.transaction_id } : {}),
+    // Opening WhatsApp can move the visitor to the app straight away; a beacon still delivers the hit.
+    ...(event === 'whatsapp_click' ? { transport_type: 'beacon' } : {}),
   });
 }
 
@@ -113,17 +117,36 @@ export function trackLeadSubmitted({ source, treatment, transactionId }) {
   track('generate_lead', { transaction_id: transactionId, form_location: source, treatment: treatment || 'not specified' });
 }
 
+const handledClicks = new WeakSet();
+const PHONE_REPEAT_MS = 2000; // a double tap on a call link counts as one call click
+let lastPhoneClickAt = -Infinity;
+const WHATSAPP_REPEAT_MS = 2000; // likewise for a double tap on a WhatsApp link
+let lastWhatsAppClickAt = -Infinity;
+
 /**
  * tel:, WhatsApp and consultation buttons anywhere on the page are tracked automatically.
- * Runs in the capture phase, before the browser follows the link.
+ * One listener on the document, in the capture phase (before the browser follows the link);
+ * it never calls preventDefault, so tel: links still open the dialler as normal.
  */
 function onDocumentClick(e) {
+  if (handledClicks.has(e)) return; // the same click is only ever tracked once
+  handledClicks.add(e);
   const el = e.target.closest?.('a, button');
   if (!el) return;
   const location = el.closest('[data-track-section]')?.getAttribute('data-track-section') || 'unknown';
   const href = el.getAttribute('href') || '';
-  if (href.startsWith('tel:')) track('phone_click', { link_location: location });
-  else if (href.includes('wa.me/') || href.includes('api.whatsapp.com')) track('whatsapp_click', { link_location: location });
-  else if (el.dataset.cta === 'consultation')
+  if (href.startsWith('tel:')) {
+    const now = Date.now();
+    if (now - lastPhoneClickAt < PHONE_REPEAT_MS) return;
+    lastPhoneClickAt = now;
+    track('phone_click', { link_location: location });
+  }
+  else if (href.includes('wa.me/') || href.includes('api.whatsapp.com')) {
+    // Tracking never blocks the link: the browser opens WhatsApp as normal (new tab / app).
+    const now = Date.now();
+    if (now - lastWhatsAppClickAt < WHATSAPP_REPEAT_MS) return;
+    lastWhatsAppClickAt = now;
+    track('whatsapp_click', { link_location: location });
+  } else if (el.dataset.cta === 'consultation')
     track('consultation_cta_click', { link_location: location, cta_text: el.textContent.trim().slice(0, 60) });
 }
