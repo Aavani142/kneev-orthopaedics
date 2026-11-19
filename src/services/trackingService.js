@@ -11,7 +11,7 @@
  * - VITE_GA4_ID set: GA4 is configured on the same Google tag.
  *
  * Events: consultation_popup_open, consultation_cta_click, phone_click, whatsapp_click,
- * generate_lead (enquiry form emailed to the clinic — the "Submit Lead Form" conversion).
+ * generate_lead (enquiry confirmed saved by the Apps Script backend — the "Submit Lead Form" conversion).
  */
 
 const env = import.meta.env;
@@ -31,9 +31,12 @@ const ENHANCED = env.VITE_GOOGLE_ADS_ENHANCED_CONVERSIONS === 'true';
  */
 const PLACEHOLDER_LABEL = 'ADD_LABEL_HERE';
 
-/** "Submit Lead Form" conversion: enquiry form emailed to the clinic. */
+/** "Submit Lead Form" conversion: enquiry confirmed saved by the Apps Script backend. */
 export const GOOGLE_ADS_CONVERSION_ID = ADS_ID;
-export const GOOGLE_ADS_CONVERSION_LABEL = env.VITE_GOOGLE_ADS_LEAD_LABEL || PLACEHOLDER_LABEL; // TODO: paste the label
+// Google Ads conversion action for the ACL patient enquiry form: send_to AW-18111261649/pZpCCJbLu7sdENHXj7xD
+export const GOOGLE_ADS_CONVERSION_LABEL = env.VITE_GOOGLE_ADS_LEAD_LABEL || 'pZpCCJbLu7sdENHXj7xD';
+/** Value and currency from the enquiry conversion's event snippet (sent with that conversion only). */
+const LEAD_CONVERSION_VALUE = { value: 1.0, currency: 'INR' };
 
 const CONVERSION_LABELS = {
   generate_lead: GOOGLE_ADS_CONVERSION_LABEL,
@@ -91,9 +94,10 @@ export function track(event, params = {}) {
   gtag('event', event, params);
   const label = CONVERSION_LABELS[event];
   if (GTM_ID || !isRealLabel(label)) return; // with GTM, conversions are GTM's job
-  // No value/currency: a patient enquiry has no real monetary value to report.
+  // Only the enquiry conversion carries a value (per its Google Ads snippet); phone and WhatsApp send none.
   gtag('event', 'conversion', {
     send_to: `${GOOGLE_ADS_CONVERSION_ID}/${label}`,
+    ...(event === 'generate_lead' ? LEAD_CONVERSION_VALUE : {}),
     ...(params.transaction_id ? { transaction_id: params.transaction_id } : {}),
     // Opening WhatsApp can move the visitor to the app straight away; a beacon still delivers the hit.
     ...(event === 'whatsapp_click' ? { transport_type: 'beacon' } : {}),
@@ -107,7 +111,7 @@ export function trackPopupOpen(trigger) {
 const trackedLeads = new Set();
 
 /**
- * "Submit Lead Form": call ONLY after /api/lead confirmed the email provider accepted the enquiry.
+ * "Submit Lead Form": call ONLY after the Apps Script backend confirmed the enquiry was saved.
  * Sent once per submission id (re-renders or repeat calls are ignored); Google Ads also
  * de-duplicates on transaction_id.
  */

@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react';
+import { normalizeMobile } from '../../shared/lead-schema.js';
 import { validateLead } from '../../shared/lead-schema.js';
 import { newSubmissionId, submitLead } from '../services/leadService.js';
 import { trackLeadSubmitted } from '../services/trackingService.js';
@@ -8,19 +9,21 @@ const EMPTY = { name: '', mobile: '', city: '', treatment: '', company: '' };
 export const FIELD_ORDER = ['name', 'mobile', 'city'];
 
 /**
- * Form state, validation and email submission for the consultation form.
+ * Form state, validation and submission (Google Apps Script) for the consultation form.
  * status: idle | submitting | success | error
- * Entered values are kept in every state so the visitor never has to retype.
+ * On error the entered values are kept so the visitor never has to retype; the form is
+ * cleared only after a confirmed success.
  */
 export function useLeadForm({ source, defaultTreatment = '' }) {
   const [values, setValues] = useState(() => ({ ...EMPTY, treatment: defaultTreatment }));
   const [errors, setErrors] = useState({});
   const [touched, setTouched] = useState({});
   const [status, setStatus] = useState('idle');
+  const [submitted, setSubmitted] = useState(null); // { firstName, mobile } for the thank-you message
   const valuesRef = useRef(values);
   const touchedRef = useRef(touched);
   const busyRef = useRef(false); // blocks double clicks before React re-renders
-  // Kept across failed attempts, so a retry of an enquiry that actually went through is not emailed twice.
+  // One id per enquiry; reused if the same details are retried, so the Ads conversion is counted once.
   const submissionIdRef = useRef(null);
 
   const setField = useCallback((name, value) => {
@@ -55,19 +58,23 @@ export function useLeadForm({ source, defaultTreatment = '' }) {
     setStatus('submitting');
     const submissionId = submissionIdRef.current || (submissionIdRef.current = newSubmissionId());
 
-    submitLead(current, { source, submissionId })
+    submitLead(current)
       .then(() => {
+        setSubmitted({ firstName: current.name.trim().split(/\s+/)[0], mobile: normalizeMobile(current.mobile) });
+        // Reset only after a confirmed success (the hidden treatment context is kept).
+        const cleared = { ...EMPTY, treatment: current.treatment };
+        valuesRef.current = cleared;
+        setValues(cleared);
+        touchedRef.current = {};
+        setTouched({});
+        setErrors({});
         setStatus('success');
-        // Only here: the server confirmed the email provider accepted the enquiry.
+        // Only here: the Apps Script backend confirmed the enquiry was saved.
         trackLeadSubmitted({ source, treatment: current.treatment, transactionId: submissionId });
+        submissionIdRef.current = null;
       })
-      .catch((err) => {
-        if (err.fields) {
-          setErrors(err.fields);
-          setStatus('idle');
-        } else {
-          setStatus('error');
-        }
+      .catch(() => {
+        setStatus('error'); // details stay in the form for a retry
       })
       .finally(() => {
         busyRef.current = false;
@@ -75,5 +82,5 @@ export function useLeadForm({ source, defaultTreatment = '' }) {
     return null;
   }, [source]);
 
-  return { values, setField, touch, errorFor, status, submit };
+  return { values, setField, touch, errorFor, status, submit, submitted };
 }

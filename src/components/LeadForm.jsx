@@ -1,6 +1,5 @@
 import { useEffect, useId, useRef } from 'react';
 import { AlertCircle, CircleCheck, LoaderCircle, Lock, Phone, Send } from 'lucide-react';
-import { normalizeMobile } from '../../shared/lead-schema.js';
 import { SITE, telHref, whatsappHref } from '../config/site.js';
 import { useLeadForm } from '../hooks/useLeadForm.js';
 import { Button, WhatsAppIcon } from './ui.jsx';
@@ -23,7 +22,7 @@ export default function LeadForm({ source, defaultTreatment = '', onEngaged, sub
   const formRef = useRef(null);
   const resultRef = useRef(null);
   const errorRef = useRef(null);
-  const { values, setField, touch, errorFor, status, submit } = useLeadForm({ source, defaultTreatment });
+  const { values, setField, touch, errorFor, status, submit, submitted } = useLeadForm({ source, defaultTreatment });
   const submitting = status === 'submitting';
 
   useEffect(() => {
@@ -39,8 +38,8 @@ export default function LeadForm({ source, defaultTreatment = '', onEngaged, sub
 
   const describe = (name) => (errorFor(name) ? id(`${name}-err`) : undefined);
 
-  if (status === 'success') {
-    const firstName = values.name.trim().split(/\s+/)[0];
+  if (status === 'success' && submitted) {
+    const { firstName, mobile } = submitted;
     return (
       <div className="animate-fade-in py-1" role="status" aria-live="polite">
         <span className="flex h-12 w-12 items-center justify-center rounded-full bg-forest text-white">
@@ -50,7 +49,7 @@ export default function LeadForm({ source, defaultTreatment = '', onEngaged, sub
           Thank you, {firstName}. Your enquiry has been sent.
         </h3>
         <p className="mt-2 text-muted">
-          Our team will contact you on <strong className="text-charcoal">+91 {normalizeMobile(values.mobile)}</strong> during
+          Our team will contact you on <strong className="text-charcoal">+91 {mobile}</strong> during
           clinic hours (Mon – Sat, 10 AM – 7:30 PM) to guide you to the right assessment.
         </p>
         <p className="mt-4 text-sm text-muted">
@@ -138,7 +137,7 @@ export default function LeadForm({ source, defaultTreatment = '', onEngaged, sub
       <p className="flex items-start justify-center gap-1.5 text-center text-xs text-muted">
         <Lock size={12} className="mt-0.5 shrink-0" aria-hidden="true" />
         <span>
-          Your details are sent securely to Kneev Orthopaedic Center by email.{' '}
+          Your details are sent securely to Kneev Orthopaedic Center.{' '}
           <a href={SITE.privacyPath} target="_blank" rel="noopener" className="underline underline-offset-2">Privacy Policy</a>
         </span>
       </p>

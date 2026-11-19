@@ -7,7 +7,7 @@ const SECTIONS = [
   {
     h: 'Information we collect',
     p: [
-      'When you submit the consultation form, your name, mobile number and location are sent by email to the clinic, through our email delivery provider (Resend). The website itself does not keep a copy of the form details.',
+      'When you submit the consultation form, your name, mobile number and location are sent to the clinic through Google Apps Script, which records them in the clinic’s Google Sheet and notifies the clinic by email. The website itself does not keep a copy of the form details.',
       'This page also measures, through Google Analytics and Google Ads, how visitors reached it (for example Google Ads click identifiers and campaign parameters) and whether the enquiry form was used. These measurements do not include your name or phone number.',
     ],
   },
@@ -20,7 +20,7 @@ const SECTIONS = [
   {
     h: 'Sharing',
     p: [
-      'We do not sell your information. It is processed by service providers that help us run this website and receive enquiries — for example Resend (email delivery), WhatsApp (Meta) and Google Analytics / Google Ads — only for these purposes.',
+      'We do not sell your information. It is processed by service providers that help us run this website and receive enquiries — for example Google (Apps Script, Sheets and Gmail), WhatsApp (Meta) and Google Analytics / Google Ads — only for these purposes.',
     ],
   },
   {
